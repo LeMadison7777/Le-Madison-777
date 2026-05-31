@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+
 const tiers = [
   { range: "0 — 5 000 FCFA", seller: "8%", buyer: "5%", total: "13%" },
   { range: "5 001 — 20 000 FCFA", seller: "7%", buyer: "4%", total: "11%" },
@@ -31,7 +32,7 @@ const CommissionsSection = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-          className="max-w-3xl mx-auto overflow-hidden rounded-2xl border border-border card-shadow bg-card/50 backdrop-blur-sm"
+          className="max-w-3xl mx-auto overflow-hidden rounded-2xl glass glass-border-glow"
         >
           <div className="overflow-x-auto">
             <table className="w-full text-sm">

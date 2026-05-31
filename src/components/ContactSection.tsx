@@ -64,7 +64,7 @@ const ContactSection = () => {
               href={href}
               variants={{ hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { duration: 0.6 } } }}
               whileHover={{ y: -4, scale: 1.02 }}
-              className="group flex items-center gap-4 p-5 sm:p-6 rounded-2xl border border-border bg-card hover:border-primary/50 transition-colors"
+              className="group flex items-center gap-4 p-5 sm:p-6 rounded-2xl glass hover:border-primary/50 transition-colors"
             >
               <div className="p-3 rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors shrink-0">
                 <Icon className="h-6 w-6" />
@@ -83,7 +83,7 @@ const ContactSection = () => {
           whileInView={{ opacity: 1, scale: 1, y: 0 }}
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-10 sm:mt-12 rounded-2xl border border-border bg-card p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-6 text-left ring-glow"
+          className="mt-10 sm:mt-12 rounded-2xl glass glass-border-glow p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-6 text-left ring-glow"
         >
           <motion.img
             whileHover={{ scale: 1.05, rotate: 1 }}
@@ -135,7 +135,7 @@ const ContactSection = () => {
                 variants={{ hidden: { opacity: 0, scale: 0.5 }, show: { opacity: 1, scale: 1, transition: { type: "spring", stiffness: 260 } } }}
                 whileHover={{ y: -4, scale: 1.15 }}
                 whileTap={{ scale: 0.92 }}
-                className="group flex items-center justify-center h-12 w-12 rounded-full border border-border bg-card text-muted-foreground hover:text-primary-foreground hover:bg-primary hover:border-primary transition-colors"
+                className="group flex items-center justify-center h-12 w-12 rounded-full glass text-muted-foreground hover:text-primary-foreground hover:bg-primary transition-colors"
               >
                 <Icon className="h-5 w-5" />
               </motion.a>

@@ -1,11 +1,22 @@
-import { Camera, CreditCard, Package, ShieldCheck } from "lucide-react";
+import { UserPlus, Camera, Repeat } from "lucide-react";
 import { motion } from "framer-motion";
 
 const steps = [
-  { icon: Camera, title: "Publie ton article", description: "Prends des photos, fixe ton prix et publie en quelques secondes." },
-  { icon: ShieldCheck, title: "Paiement sécurisé", description: "L'acheteur paie en toute sécurité. L'argent est bloqué jusqu'à la réception." },
-  { icon: Package, title: "Envoie le colis", description: "Expédie l'article. L'acheteur confirme la réception sous 48h." },
-  { icon: CreditCard, title: "Reçois tes gains", description: "Retrait sur Mobile Money ou compte bancaire en un clic." },
+  {
+    icon: UserPlus,
+    title: "Créez votre compte",
+    description: "Inscrivez-vous gratuitement. Votre profil est votre boutique personnelle.",
+  },
+  {
+    icon: Camera,
+    title: "Publiez vos articles",
+    description: "Prenez une photo, fixez votre prix. Votre article est visible en 5 minutes.",
+  },
+  {
+    icon: Repeat,
+    title: "Vendez & achetez en confiance",
+    description: "Paiement sécurisé, livraison rapide. La communauté vous protège.",
+  },
 ];
 
 const HowItWorks = () => {
@@ -19,49 +30,65 @@ const HowItWorks = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
+          <p className="text-mono text-xs text-primary mb-3">— Process</p>
           <h2 className="font-display text-3xl md:text-5xl font-bold mb-4">
-            Comment ça <span className="text-gradient">marche</span> ?
+            Simple, rapide, <span className="text-gradient">sécurisé</span>
           </h2>
           <p className="text-muted-foreground max-w-md mx-auto">
-            Vendre et acheter n'a jamais été aussi simple.
+            Rejoindre Madclothes prend moins de 2 minutes.
           </p>
         </motion.div>
 
-        <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, margin: "-60px" }}
-          variants={{ hidden: {}, show: { transition: { staggerChildren: 0.12 } } }}
-        >
-          {steps.map((step, i) => (
-            <motion.div
-              key={step.title}
-              variants={{
-                hidden: { opacity: 0, y: 40 },
-                show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
-              }}
-              whileHover={{ y: -8, transition: { duration: 0.3 } }}
-              className="group relative rounded-2xl bg-card border border-border p-8 hover:border-primary/40 transition-colors duration-300 card-shadow overflow-hidden"
-            >
+        <div className="relative">
+          {/* Animated connecting line (desktop) */}
+          <motion.div
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true, margin: "-120px" }}
+            transition={{ duration: 1.6, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}
+            style={{ transformOrigin: "left" }}
+            className="hidden lg:block absolute top-[88px] left-[12%] right-[12%] h-px bg-gradient-to-r from-transparent via-primary to-transparent"
+          />
+
+          <motion.div
+            className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-6 relative"
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-60px" }}
+            variants={{ hidden: {}, show: { transition: { staggerChildren: 0.2, delayChildren: 0.2 } } }}
+          >
+            {steps.map((step, i) => (
               <motion.div
-                className="absolute inset-0 bg-gradient-primary opacity-0 group-hover:opacity-[0.06] transition-opacity"
-              />
-              <motion.div
-                whileHover={{ rotate: -8, scale: 1.1 }}
-                transition={{ type: "spring", stiffness: 300 }}
-                className="mb-6 inline-flex items-center justify-center h-14 w-14 rounded-xl bg-gradient-primary text-primary-foreground"
+                key={step.title}
+                variants={{
+                  hidden: { opacity: 0, y: 50 },
+                  show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } },
+                }}
+                whileHover={{ y: -8 }}
+                className="group relative rounded-2xl glass glass-border-glow p-8 text-center overflow-hidden hover-glow-orange"
               >
-                <step.icon className="h-6 w-6" />
+                <div className="relative mx-auto mb-6 inline-flex items-center justify-center">
+                  <motion.div
+                    whileHover={{ rotate: -8, scale: 1.1 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                    className="h-20 w-20 rounded-2xl bg-gradient-primary text-primary-foreground flex items-center justify-center glow-shadow"
+                  >
+                    <step.icon className="h-8 w-8" />
+                  </motion.div>
+                  <span className="absolute -top-2 -right-2 h-8 w-8 rounded-full glass-strong text-mono text-xs flex items-center justify-center text-primary">
+                    0{i + 1}
+                  </span>
+                </div>
+                <h3 className="font-display text-xl font-bold mb-3 uppercase tracking-wide">
+                  {step.title}
+                </h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  {step.description}
+                </p>
               </motion.div>
-              <span className="absolute top-6 right-6 text-5xl font-display font-black text-border/60 group-hover:text-primary/30 transition-colors">
-                {i + 1}
-              </span>
-              <h3 className="font-display text-xl font-bold mb-2 relative">{step.title}</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed relative">{step.description}</p>
-            </motion.div>
-          ))}
-        </motion.div>
+            ))}
+          </motion.div>
+        </div>
       </div>
     </section>
   );
