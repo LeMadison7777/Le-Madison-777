@@ -18,9 +18,14 @@ const HeroSection = () => {
 
   return (
     <section id="home" className="relative min-h-screen flex items-center overflow-hidden pt-16">
-      {/* 3D Particle Sphere (desktop only) */}
-      <div className="absolute inset-0 hidden md:block pointer-events-none">
-        <div className="absolute right-[-12%] top-1/2 -translate-y-1/2 h-[110vh] w-[110vh] max-w-[1100px] max-h-[1100px] opacity-90">
+      {/* 3D Particle Sphere — visible on all screens */}
+      <div className="absolute inset-0 pointer-events-none">
+        {/* Mobile: centered behind content, lower opacity */}
+        <div className="md:hidden absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[90vw] w-[90vw] opacity-90">
+          <ParticleSphere />
+        </div>
+        {/* Tablet/Desktop: large, right-anchored */}
+        <div className="hidden md:block absolute right-[-12%] top-1/2 -translate-y-1/2 h-[110vh] w-[110vh] max-w-[1100px] max-h-[1100px] opacity-90">
           <ParticleSphere />
         </div>
       </div>

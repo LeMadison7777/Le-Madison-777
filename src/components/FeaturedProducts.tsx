@@ -1,34 +1,10 @@
 import { motion } from "framer-motion";
 import { Heart, ArrowUpRight, MapPin } from "lucide-react";
-
-type Condition = "Neuf sans étiquette" | "Très bon état" | "Bon état";
-
-const products: {
-  name: string;
-  brand: string;
-  size: string;
-  price: number;
-  location: string;
-  condition: Condition;
-  img: string;
-}[] = [
-  { name: "Veste en cuir vintage", brand: "Zara", size: "M", price: 8500, location: "Pointe-Noire, Congo", condition: "Très bon état", img: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=700&q=70&auto=format&fit=crop" },
-  { name: "Robe fleurie d'été", brand: "Mango", size: "S", price: 6200, location: "Abidjan, Côte d'Ivoire", condition: "Neuf sans étiquette", img: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=700&q=70&auto=format&fit=crop" },
-  { name: "Sneakers blanches", brand: "Nike Air", size: "42", price: 12000, location: "Dakar, Sénégal", condition: "Bon état", img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=700&q=70&auto=format&fit=crop" },
-  { name: "Sac à main cuir", brand: "Michael Kors", size: "Unique", price: 18500, location: "Brazzaville, Congo", condition: "Très bon état", img: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=700&q=70&auto=format&fit=crop" },
-  { name: "Jean droit délavé", brand: "Levi's 501", size: "32", price: 5500, location: "Yaoundé, Cameroun", condition: "Bon état", img: "https://images.unsplash.com/photo-1542272604-787c3835535d?w=700&q=70&auto=format&fit=crop" },
-  { name: "Montre automatique", brand: "Seiko", size: "40mm", price: 24000, location: "Lomé, Togo", condition: "Très bon état", img: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=700&q=70&auto=format&fit=crop" },
-  { name: "Lunettes de soleil", brand: "Ray-Ban", size: "Unique", price: 9800, location: "Cotonou, Bénin", condition: "Neuf sans étiquette", img: "https://images.unsplash.com/photo-1577803645773-f96470509666?w=700&q=70&auto=format&fit=crop" },
-  { name: "Chemise en lin", brand: "H&M", size: "L", price: 4200, location: "Pointe-Noire, Congo", condition: "Bon état", img: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=700&q=70&auto=format&fit=crop" },
-];
-
-const conditionStyles: Record<Condition, string> = {
-  "Neuf sans étiquette": "bg-primary/20 text-primary border-primary/40",
-  "Très bon état": "bg-accent/20 text-accent-foreground border-accent/40",
-  "Bon état": "bg-white/10 text-foreground/80 border-white/15",
-};
+import { Link } from "react-router-dom";
+import { PRODUCTS, conditionStyles } from "@/data/products";
 
 const FeaturedProducts = () => {
+  const products = PRODUCTS.slice(0, 8);
   return (
     <section id="featured" className="py-24 relative">
       <div className="container mx-auto px-4">
@@ -57,7 +33,7 @@ const FeaturedProducts = () => {
         >
           {products.map((p) => (
             <motion.article
-              key={p.name}
+              key={p.id}
               variants={{
                 hidden: { opacity: 0, y: 40, scale: 0.96 },
                 show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
@@ -66,7 +42,7 @@ const FeaturedProducts = () => {
               transition={{ duration: 0.4 }}
               className="group glass glass-border-glow rounded-[16px] overflow-hidden hover-glow-orange flex flex-col"
             >
-              <div className="relative aspect-square overflow-hidden">
+              <Link to={`/article/${p.id}`} className="relative aspect-square overflow-hidden block">
                 <motion.img
                   src={p.img}
                   alt={p.name}
@@ -81,11 +57,12 @@ const FeaturedProducts = () => {
                 </span>
                 <button
                   aria-label="Ajouter aux favoris"
+                  onClick={(e) => { e.preventDefault(); }}
                   className="absolute top-3 right-3 w-9 h-9 rounded-full glass-strong flex items-center justify-center text-foreground/80 hover:text-primary hover:scale-110 transition-all"
                 >
                   <Heart size={16} />
                 </button>
-              </div>
+              </Link>
 
               <div className="p-4 flex-1 flex flex-col gap-2">
                 <h3 className="font-display font-semibold text-base leading-tight line-clamp-1 group-hover:text-primary transition-colors">
@@ -101,10 +78,13 @@ const FeaturedProducts = () => {
                   <MapPin size={12} />
                   <span className="line-clamp-1">{p.location}</span>
                 </div>
-                <button className="mt-3 w-full flex items-center justify-center gap-1.5 text-xs font-semibold py-2.5 rounded-xl bg-white/5 hover:bg-primary hover:text-primary-foreground border border-white/10 hover:border-primary transition-all duration-300 shine">
+                <Link
+                  to={`/article/${p.id}`}
+                  className="mt-3 w-full flex items-center justify-center gap-1.5 text-xs font-semibold py-2.5 rounded-xl bg-white/5 hover:bg-primary hover:text-primary-foreground border border-white/10 hover:border-primary transition-all duration-300 shine"
+                >
                   Voir l'article
                   <ArrowUpRight size={14} />
-                </button>
+                </Link>
               </div>
             </motion.article>
           ))}

@@ -1,25 +1,10 @@
 import { motion } from "framer-motion";
 import { Heart, ArrowUpRight, MapPin, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
-
-type Condition = "Neuf sans étiquette" | "Très bon état" | "Bon état";
-
-const latest: {
-  name: string; brand: string; size: string; price: number; location: string; condition: Condition; img: string;
-}[] = [
-  { name: "Pull en laine mérinos", brand: "Uniqlo", size: "M", price: 7200, location: "Pointe-Noire, Congo", condition: "Très bon état", img: "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=700&q=70&auto=format&fit=crop" },
-  { name: "Bottines en daim", brand: "Clarks", size: "39", price: 14500, location: "Abidjan, Côte d'Ivoire", condition: "Bon état", img: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=700&q=70&auto=format&fit=crop" },
-  { name: "Sac bandoulière", brand: "Coach", size: "Unique", price: 22000, location: "Dakar, Sénégal", condition: "Neuf sans étiquette", img: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=700&q=70&auto=format&fit=crop" },
-  { name: "Manteau long", brand: "COS", size: "L", price: 16800, location: "Brazzaville, Congo", condition: "Très bon état", img: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=700&q=70&auto=format&fit=crop" },
-];
-
-const conditionStyles: Record<Condition, string> = {
-  "Neuf sans étiquette": "bg-primary/20 text-primary border-primary/40",
-  "Très bon état": "bg-accent/20 text-accent-foreground border-accent/40",
-  "Bon état": "bg-white/10 text-foreground/80 border-white/15",
-};
+import { PRODUCTS, conditionStyles } from "@/data/products";
 
 const LatestArrivals = () => {
+  const latest = PRODUCTS.slice(-4);
   return (
     <section id="latest" className="py-24 relative">
       <div className="container mx-auto px-4">
@@ -54,7 +39,7 @@ const LatestArrivals = () => {
         >
           {latest.map((p) => (
             <motion.article
-              key={p.name}
+              key={p.id}
               variants={{
                 hidden: { opacity: 0, y: 40, scale: 0.96 },
                 show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
@@ -62,7 +47,7 @@ const LatestArrivals = () => {
               whileHover={{ scale: 1.02 }}
               className="group glass glass-border-glow rounded-[16px] overflow-hidden hover-glow-orange flex flex-col"
             >
-              <div className="relative aspect-square overflow-hidden">
+              <Link to={`/article/${p.id}`} className="relative aspect-square overflow-hidden block">
                 <motion.img
                   src={p.img}
                   alt={p.name}
@@ -77,11 +62,12 @@ const LatestArrivals = () => {
                 </span>
                 <button
                   aria-label="Ajouter aux favoris"
+                  onClick={(e) => { e.preventDefault(); }}
                   className="absolute top-3 right-3 w-9 h-9 rounded-full glass-strong flex items-center justify-center text-foreground/80 hover:text-primary hover:scale-110 transition-all"
                 >
                   <Heart size={16} />
                 </button>
-              </div>
+              </Link>
 
               <div className="p-4 flex-1 flex flex-col gap-2">
                 <h3 className="font-display font-semibold text-base leading-tight line-clamp-1 group-hover:text-primary transition-colors">
@@ -97,10 +83,13 @@ const LatestArrivals = () => {
                   <MapPin size={12} />
                   <span className="line-clamp-1">{p.location}</span>
                 </div>
-                <button className="mt-3 w-full flex items-center justify-center gap-1.5 text-xs font-semibold py-2.5 rounded-xl bg-white/5 hover:bg-primary hover:text-primary-foreground border border-white/10 hover:border-primary transition-all duration-300 shine">
+                <Link
+                  to={`/article/${p.id}`}
+                  className="mt-3 w-full flex items-center justify-center gap-1.5 text-xs font-semibold py-2.5 rounded-xl bg-white/5 hover:bg-primary hover:text-primary-foreground border border-white/10 hover:border-primary transition-all duration-300 shine"
+                >
                   Voir l'article
                   <ArrowUpRight size={14} />
-                </button>
+                </Link>
               </div>
             </motion.article>
           ))}

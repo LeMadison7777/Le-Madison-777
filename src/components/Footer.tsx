@@ -12,7 +12,7 @@ const Footer = () => {
             </span>
           </div>
           <p className="text-sm text-muted-foreground">
-            © 2025 Madclothes. La mode de seconde main en Afrique.
+            © 2026 Madclothes. La mode de seconde main en Afrique.
           </p>
           <div className="flex gap-6 text-sm text-muted-foreground">
             <a href="#" className="hover:text-foreground transition-colors">CGU</a>

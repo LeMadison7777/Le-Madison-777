@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { Heart, ArrowUpRight, MapPin, SlidersHorizontal, X } from "lucide-react";
+import { Heart, ArrowUpRight, MapPin, SlidersHorizontal, X, ArrowLeft } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import BackgroundFX from "@/components/BackgroundFX";
@@ -11,6 +12,7 @@ import { CATEGORIES, SIZES, CITIES, PRODUCTS, conditionStyles } from "@/data/pro
 const PRICE_MAX = 30000;
 
 const Boutique = () => {
+  const navigate = useNavigate();
   const [category, setCategory] = useState<string | null>(null);
   const [size, setSize] = useState<string | null>(null);
   const [city, setCity] = useState<string | null>(null);
@@ -108,6 +110,17 @@ const Boutique = () => {
       <Navbar />
 
       <main className="container mx-auto px-4 pt-28 pb-24">
+        <div className="flex items-center justify-between mb-6">
+          <button
+            onClick={() => navigate(-1)}
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+          >
+            <ArrowLeft size={16} /> Retour
+          </button>
+          <Link to="/" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+            Accueil
+          </Link>
+        </div>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -157,7 +170,7 @@ const Boutique = () => {
                     whileHover={{ scale: 1.02 }}
                     className="group glass glass-border-glow rounded-[16px] overflow-hidden hover-glow-orange flex flex-col"
                   >
-                    <div className="relative aspect-square overflow-hidden">
+                    <Link to={`/article/${p.id}`} className="relative aspect-square overflow-hidden block">
                       <motion.img
                         src={p.img}
                         alt={p.name}
@@ -172,11 +185,12 @@ const Boutique = () => {
                       </span>
                       <button
                         aria-label="Ajouter aux favoris"
+                        onClick={(e) => { e.preventDefault(); }}
                         className="absolute top-3 right-3 w-9 h-9 rounded-full glass-strong flex items-center justify-center text-foreground/80 hover:text-primary hover:scale-110 transition-all"
                       >
                         <Heart size={16} />
                       </button>
-                    </div>
+                    </Link>
 
                     <div className="p-4 flex-1 flex flex-col gap-2">
                       <h3 className="font-display font-semibold text-base leading-tight line-clamp-1 group-hover:text-primary transition-colors">
@@ -190,10 +204,13 @@ const Boutique = () => {
                         <MapPin size={12} />
                         <span className="line-clamp-1">{p.location}</span>
                       </div>
-                      <button className="mt-3 w-full flex items-center justify-center gap-1.5 text-xs font-semibold py-2.5 rounded-xl bg-white/5 hover:bg-primary hover:text-primary-foreground border border-white/10 hover:border-primary transition-all duration-300 shine">
+                      <Link
+                        to={`/article/${p.id}`}
+                        className="mt-3 w-full flex items-center justify-center gap-1.5 text-xs font-semibold py-2.5 rounded-xl bg-white/5 hover:bg-primary hover:text-primary-foreground border border-white/10 hover:border-primary transition-all duration-300 shine"
+                      >
                         Voir l'article
                         <ArrowUpRight size={14} />
-                      </button>
+                      </Link>
                     </div>
                   </motion.article>
                 ))}
