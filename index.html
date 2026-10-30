@@ -3,23 +3,53 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="google-site-verification" content="VDo9p9lO_voD9Kw_B2QqHO5_rjbO1cno5--WGxBSWWo" />
-    <title>Madclothes — Marketplace de vêtements au Congo | Le Madison</title>
-    <meta name="description" content="Maclothes est une marketplace congolaise dédiée à la mode de seconde main. Achetez et vendez facilement vos vêtements à Pointe-Noire et partout au Congo grâce au paiement Mobile Money." />
+    <meta name="theme-color" content="#e60072" />
+    <meta name="application-name" content="Madclothes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Madclothes" />
+    <title>Madclothes — Mode d'occasion au Congo</title>
+    <meta name="description" content="Achetez et vendez des vêtements et accessoires d'occasion au Congo avec Madclothes." />
     <meta name="author" content="Madclothes" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-
-    <meta property="og:title" content="Madclothes — La Mode de Seconde Main" />
-    <meta property="og:description" content="Marketplace de vêtements de seconde main pour l'Afrique francophone." />
+    <link rel="icon" href="/icons/icon-192.png" type="image/png" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <meta property="og:title" content="Madclothes — Mode d'occasion au Congo" />
+    <meta property="og:description" content="Achetez et vendez des vêtements et accessoires d'occasion au Congo." />
     <meta property="og:type" content="website" />
-
+    <meta property="og:image" content="/brand/madclothes-logo.jpg" />
+    <meta property="og:locale" content="fr_CG" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Madclothes — Mode d'occasion au Congo" />
+    <meta name="twitter:description" content="Achetez et vendez des vêtements d'occasion au Congo." />
   </head>
-
   <body>
-    <div id="root"></div>
+    <div id="root"><main data-app-startup style="min-height:100vh;display:grid;place-items:center;background:#050505;color:#f5f5f5;font:16px system-ui,sans-serif">Chargement de Madclothes…</main></div>
+    <script>
+      window.setTimeout(() => {
+        const fallback = document.querySelector("[data-app-startup]");
+        if (!fallback) return;
+        const message = document.createElement("p");
+        message.textContent = "Madclothes ne s'est pas chargé. Actualisez la page et vérifiez que le serveur est lancé.";
+        const retry = document.createElement("button");
+        retry.type = "button";
+        retry.textContent = "Actualiser";
+        retry.style.cssText = "margin-top:16px;border:0;border-radius:9999px;background:#e60072;color:white;padding:10px 20px;cursor:pointer";
+        retry.addEventListener("click", () => window.location.reload());
+        fallback.replaceChildren(message, retry);
+      }, 12000);
+    </script>
+    <script type="module">
+      // Clear old installed PWA workers before the development entry module
+      // loads; a stale worker can keep serving an outdated app shell.
+      if (import.meta.env.DEV && "serviceWorker" in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations().catch(() => []);
+        const cacheNames = await caches.keys().catch(() => []);
+        if (registrations.length || cacheNames.length) {
+          await Promise.all(registrations.map((registration) => registration.unregister()));
+          await Promise.all(cacheNames.map((cacheName) => caches.delete(cacheName)));
+          window.location.reload();
+        }
+      }
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-    
-    

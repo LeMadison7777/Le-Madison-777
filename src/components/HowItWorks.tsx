@@ -1,97 +1,18 @@
-import { UserPlus, Camera, Repeat } from "lucide-react";
-import { motion } from "framer-motion";
+import { Camera, MessageCircle, UserPlus } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
 
 const steps = [
-  {
-    icon: UserPlus,
-    title: "Créez votre compte",
-    description: "Inscrivez-vous gratuitement. Votre profil est votre boutique personnelle.",
-  },
-  {
-    icon: Camera,
-    title: "Publiez vos articles",
-    description: "Prenez une photo, fixez votre prix. Votre article est visible en 5 minutes.",
-  },
-  {
-    icon: Repeat,
-    title: "Vendez & achetez en confiance",
-    description: "Paiement sécurisé, livraison rapide. La communauté vous protège.",
-  },
+  { icon: UserPlus, title: "Créez votre compte", description: "Connectez-vous pour enregistrer vos annonces, vos favoris et vos conversations." },
+  { icon: Camera, title: "Publiez un article", description: "Ajoutez des photos, décrivez l'état de l'article et indiquez votre prix." },
+  { icon: MessageCircle, title: "Échangez avec l'autre membre", description: "Discutez des détails et convenez ensemble des modalités de remise." },
 ];
 
 const HowItWorks = () => {
-  return (
-    <section id="how" className="py-24 relative">
-      <div className="container mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-16"
-        >
-          <p className="text-mono text-xs text-primary mb-3">— Process</p>
-          <h2 className="font-display text-3xl md:text-5xl font-bold mb-4">
-            Simple, rapide, <span className="text-gradient">sécurisé</span>
-          </h2>
-          <p className="text-muted-foreground max-w-md mx-auto">
-            Rejoindre Madclothes prend moins de 2 minutes.
-          </p>
-        </motion.div>
-
-        <div className="relative">
-          {/* Animated connecting line (desktop) */}
-          <motion.div
-            initial={{ scaleX: 0 }}
-            whileInView={{ scaleX: 1 }}
-            viewport={{ once: true, margin: "-120px" }}
-            transition={{ duration: 1.6, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}
-            style={{ transformOrigin: "left" }}
-            className="hidden lg:block absolute top-[88px] left-[12%] right-[12%] h-px bg-gradient-to-r from-transparent via-primary to-transparent"
-          />
-
-          <motion.div
-            className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-6 relative"
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, margin: "-60px" }}
-            variants={{ hidden: {}, show: { transition: { staggerChildren: 0.2, delayChildren: 0.2 } } }}
-          >
-            {steps.map((step, i) => (
-              <motion.div
-                key={step.title}
-                variants={{
-                  hidden: { opacity: 0, y: 50 },
-                  show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } },
-                }}
-                whileHover={{ y: -8 }}
-                className="group relative rounded-2xl glass glass-border-glow p-8 text-center overflow-hidden hover-glow-orange"
-              >
-                <div className="relative mx-auto mb-6 inline-flex items-center justify-center">
-                  <motion.div
-                    whileHover={{ rotate: -8, scale: 1.1 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                    className="h-20 w-20 rounded-2xl bg-gradient-primary text-primary-foreground flex items-center justify-center glow-shadow"
-                  >
-                    <step.icon className="h-8 w-8" />
-                  </motion.div>
-                  <span className="absolute -top-2 -right-2 h-8 w-8 rounded-full glass-strong text-mono text-xs flex items-center justify-center text-primary">
-                    0{i + 1}
-                  </span>
-                </div>
-                <h3 className="font-display text-xl font-bold mb-3 uppercase tracking-wide">
-                  {step.title}
-                </h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  {step.description}
-                </p>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </div>
-    </section>
-  );
+  const reduce = useReducedMotion();
+  return <section id="how" className="py-24 relative"><div className="container mx-auto px-4">
+    <motion.div initial={reduce ? false : { opacity: 0, y: 18 }} whileInView={reduce ? undefined : { opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-14"><p className="text-mono text-xs text-primary mb-3">Comment ça marche</p><h2 className="font-display text-3xl md:text-5xl font-bold mb-4">Simple, à votre <span className="text-gradient">rythme</span></h2><p className="text-muted-foreground max-w-xl mx-auto">Madclothes met en relation les membres. Paiement et livraison restent à convenir jusqu'à l'activation des partenaires.</p></motion.div>
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">{steps.map(({ icon: Icon, title, description }, index) => <motion.article key={title} initial={reduce ? false : { opacity: 0, y: 16 }} whileInView={reduce ? undefined : { opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: reduce ? 0 : index * .08 }} className="glass rounded-2xl p-7 text-center"><div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-2xl bg-gradient-primary text-primary-foreground"><Icon size={27} /></div><p className="text-xs text-primary mb-2">0{index + 1}</p><h3 className="font-display text-xl font-bold mb-3">{title}</h3><p className="text-sm leading-relaxed text-muted-foreground">{description}</p></motion.article>)}</div>
+  </div></section>;
 };
 
 export default HowItWorks;

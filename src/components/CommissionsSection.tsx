@@ -1,72 +1,18 @@
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
-const tiers = [
-  { range: "0 — 5 000 FCFA", seller: "8%", buyer: "5%", total: "13%" },
-  { range: "5 001 — 20 000 FCFA", seller: "7%", buyer: "4%", total: "11%" },
-  { range: "20 001 — 50 000 FCFA", seller: "6%", buyer: "4%", total: "10%" },
-  { range: "50 001 — 100 000 FCFA", seller: "5%", buyer: "3%", total: "8%" },
-  { range: "100 001+ FCFA", seller: "4%", buyer: "3%", total: "7%" },
-];
+type CommissionInfo = { configured: boolean; sellerBps: number };
 
 const CommissionsSection = () => {
-  return (
-    <section id="commissions" className="py-24 relative">
-      <div className="container mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-16"
-        >
-          <h2 className="font-display text-3xl md:text-5xl font-bold mb-4">
-            Tarifs <span className="text-gradient">transparents</span>
-          </h2>
-          <p className="text-muted-foreground max-w-lg mx-auto">
-            Des commissions dégressives — plus tu vends cher, moins tu paies.
-          </p>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-          className="max-w-3xl mx-auto overflow-hidden rounded-2xl glass glass-border-glow"
-        >
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-secondary/50">
-                  <th className="text-left px-6 py-4 font-body font-semibold text-muted-foreground">Tranche de prix</th>
-                  <th className="text-center px-4 py-4 font-body font-semibold text-muted-foreground">Vendeur</th>
-                  <th className="text-center px-4 py-4 font-body font-semibold text-muted-foreground">Acheteur</th>
-                  <th className="text-center px-4 py-4 font-body font-semibold text-primary">Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {tiers.map((t, i) => (
-                  <motion.tr
-                    key={i}
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.08, duration: 0.5 }}
-                    className="border-t border-border hover:bg-secondary/30 transition-colors"
-                  >
-                    <td className="px-6 py-4 font-medium">{t.range}</td>
-                    <td className="text-center px-4 py-4 text-muted-foreground">{t.seller}</td>
-                    <td className="text-center px-4 py-4 text-muted-foreground">{t.buyer}</td>
-                    <td className="text-center px-4 py-4 font-bold text-primary">{t.total}</td>
-                  </motion.tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </motion.div>
-      </div>
-    </section>
-  );
+  const [commission, setCommission] = useState<CommissionInfo>({ configured: false, sellerBps: 0 });
+  useEffect(() => { void fetch("/api/commissions").then((response) => response.ok ? response.json() : null).then((result) => { if (result) setCommission(result); }).catch(() => {}); }, []);
+  return <section id="commissions" className="py-20 relative"><div className="container mx-auto px-4">
+    <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mx-auto max-w-2xl text-center">
+      <p className="text-mono text-xs text-primary mb-3">Frais de service</p>
+      <h2 className="font-display text-3xl md:text-5xl font-bold mb-5">Des frais <span className="text-gradient">transparents</span></h2>
+      {commission.configured ? <div className="glass rounded-2xl p-8"><p className="text-muted-foreground">Commission vendeur</p><p className="font-display text-4xl font-bold text-primary mt-2">{(commission.sellerBps / 100).toLocaleString("fr-FR")} %</p><p className="text-xs text-muted-foreground mt-3">Le montant applicable est rappelé avant la mise en place d'un paiement.</p></div> : <div className="glass rounded-2xl p-8"><p className="text-muted-foreground">Le barème sera communiqué avant l'activation des paiements. Aucun frais n'est appliqué à une commande tant que le prestataire de paiement n'est pas activé.</p></div>}
+    </motion.div>
+  </div></section>;
 };
 
 export default CommissionsSection;
