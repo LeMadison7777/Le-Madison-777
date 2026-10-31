@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { api } from "@/lib/api";
 
 type CommissionInfo = { configured: boolean; sellerBps: number };
 
 const CommissionsSection = () => {
   const [commission, setCommission] = useState<CommissionInfo>({ configured: false, sellerBps: 0 });
-  useEffect(() => { void fetch("/api/commissions").then((response) => response.ok ? response.json() : null).then((result) => { if (result) setCommission(result); }).catch(() => {}); }, []);
+  useEffect(() => { void api<CommissionInfo>("/api/commissions").then((result) => { if (result && typeof result.sellerBps === "number") setCommission(result); }).catch(() => {}); }, []);
   return <section id="commissions" className="py-20 relative"><div className="container mx-auto px-4">
     <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mx-auto max-w-2xl text-center">
       <p className="text-mono text-xs text-primary mb-3">Frais de service</p>

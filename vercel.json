@@ -3,6 +3,7 @@
   "rewrites": [
     { "source": "/sitemap.xml", "destination": "/api/sitemap" },
     { "source": "/robots.txt", "destination": "/api/robots" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/api/:match*", "destination": "/api?__madclothes_route=/api/:match*" },
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }

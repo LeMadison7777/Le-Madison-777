@@ -2,8 +2,8 @@ import { randomUUID } from "node:crypto";
 import { GetObjectCommand, HeadObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { createRemoteJWKSet, jwtVerify, type JWTPayload } from "jose";
-import { pool } from "./database";
-import { getR2Bucket, getR2Client } from "./r2";
+import { pool } from "./database.js";
+import { getR2Bucket, getR2Client } from "./r2.js";
 
 const MAX_JSON_BYTES = 64_000;
 const MAX_IMAGE_BYTES = 15 * 1024 * 1024;
@@ -88,7 +88,7 @@ function storage() {
 
 async function imageUrl(key: string | null | undefined): Promise<string> {
   if (!key) return "/images/product-placeholder.svg";
-  const base = process.env.R2_PUBLIC_BASE_URL?.replace(/\/$/, "");
+  const base = (process.env.R2_PUBLIC_BASE_URL || process.env.R2_PUBLIC_URL)?.replace(/\/$/, "");
   if (base) return `${base}/${key}`;
   try {
     return await getSignedUrl(storage(), new GetObjectCommand({ Bucket: getR2Bucket(), Key: key }), { expiresIn: 3600 });
@@ -566,7 +566,7 @@ async function sitemap(request: Request) {
   } catch (error) {
     console.warn("Sitemap listing URLs unavailable; serving public pages only.", error);
   }
-  const xmlEscape = (value: string) => value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&apos;");
+  const xmlEscape = (value: string) => value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
   const urls = entries.map(({ path, updatedAt }) => {
     const lastmod = updatedAt ? `<lastmod>${new Date(updatedAt).toISOString()}</lastmod>` : "";
     return `<url><loc>${xmlEscape(`${origin}${path}`)}</loc>${lastmod}</url>`;
@@ -585,24 +585,54 @@ function robots(request: Request) {
   });
 }
 
+function resolveRequestPath(request: Request): { path: string; requestForRouting: Request } {
+  const url = new URL(request.url);
+  let path = url.pathname.replace(/\/$/, "") || "/";
+
+  const internalRoute = url.searchParams.get("__madclothes_route");
+  if (internalRoute) {
+    url.searchParams.delete("__madclothes_route");
+    if (path === "/api" || path === "/api/index" || path === "/") {
+      path = (internalRoute.startsWith("/") ? internalRoute : `/${internalRoute}`).replace(/\/$/, "") || "/";
+    }
+  }
+
+  if (path === "/api" || path === "/api/index") {
+    const matchedPath = request.headers.get("x-matched-path");
+    if (matchedPath && matchedPath.startsWith("/api/")) {
+      path = matchedPath.split("?")[0].replace(/\/$/, "") || "/";
+    }
+  }
+
+  let requestForRouting = request;
+  if (internalRoute) {
+    try {
+      requestForRouting = new Request(url.toString(), request);
+    } catch {
+      requestForRouting = request;
+    }
+  }
+
+  return { path, requestForRouting };
+}
+
 export async function handleApi(request: Request): Promise<Response> {
   if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: { "Access-Control-Allow-Methods": allowedMethods, "Access-Control-Allow-Headers": "Authorization, Content-Type", "Access-Control-Max-Age": "600" } });
-  const url = new URL(request.url);
-  const path = url.pathname.replace(/\/$/, "") || "/";
-  if (path === "/api/robots" && request.method === "GET") return robots(request);
-  if (path === "/api/sitemap" && request.method === "GET") return await sitemap(request);
+  const { path, requestForRouting: req } = resolveRequestPath(request);
+  if (path === "/api/robots" && req.method === "GET") return robots(req);
+  if (path === "/api/sitemap" && req.method === "GET") return await sitemap(req);
   if (!process.env.DATABASE_URL) return json({ error: "DATABASE_URL n'est pas configurée." }, 503);
   try {
-    if (path === "/api/health" && request.method === "GET") {
+    if (path === "/api/health" && req.method === "GET") {
       await pool.query("SELECT 1");
       return json({ status: "ok", database: "connected" });
     }
-    if (path === "/api/commissions" && request.method === "GET") {
+    if (path === "/api/commissions" && req.method === "GET") {
       const result = await pool.query("SELECT value FROM platform_settings WHERE key='commission_rates'");
       const value = result.rows[0]?.value || {};
       return json({ configured: Boolean(value.configured), sellerBps: Number(value.seller_bps || 0) });
     }
-    if (path === "/api/reviews" && request.method === "GET") {
+    if (path === "/api/reviews" && req.method === "GET") {
       const result = await pool.query(
         `SELECT r.rating,r.comment,p.display_name AS "displayName",p.city,r.created_at AS "createdAt"
          FROM reviews r JOIN profiles p ON p.id=r.reviewer_id
@@ -611,17 +641,17 @@ export async function handleApi(request: Request): Promise<Response> {
       );
       return json(result.rows);
     }
-    if (path === "/api/profile") return await profile(request, request.method);
-    if (path === "/api/listings" || path.startsWith("/api/listings/") || path === "/api/categories" || path === "/api/seller/listings") return await listings(request, request.method, path);
-    if (path === "/api/uploads/presign" || path === "/api/uploads/confirm") return await uploads(request, request.method, path);
-    if (path === "/api/favorites" || path.startsWith("/api/favorites/")) return await favorites(request, request.method, path);
-    if (path === "/api/orders" || path.startsWith("/api/orders/")) return await orders(request, request.method, path);
-    if (path === "/api/conversations" || path.startsWith("/api/conversations/")) return await messaging(request, request.method, path);
-    if (path === "/api/notifications" || path.startsWith("/api/notifications/")) return await notifications(request, request.method, path);
-    if (path.startsWith("/api/admin/")) return await admin(request, request.method, path);
-    if (path === "/api/reports" && request.method === "POST") {
-      const user = await authenticated(request);
-      const input = await body<Record<string, unknown>>(request);
+    if (path === "/api/profile") return await profile(req, req.method);
+    if (path === "/api/listings" || path.startsWith("/api/listings/") || path === "/api/categories" || path === "/api/seller/listings") return await listings(req, req.method, path);
+    if (path === "/api/uploads/presign" || path === "/api/uploads/confirm") return await uploads(req, req.method, path);
+    if (path === "/api/favorites" || path.startsWith("/api/favorites/")) return await favorites(req, req.method, path);
+    if (path === "/api/orders" || path.startsWith("/api/orders/")) return await orders(req, req.method, path);
+    if (path === "/api/conversations" || path.startsWith("/api/conversations/")) return await messaging(req, req.method, path);
+    if (path === "/api/notifications" || path.startsWith("/api/notifications/")) return await notifications(req, req.method, path);
+    if (path.startsWith("/api/admin/")) return await admin(req, req.method, path);
+    if (path === "/api/reports" && req.method === "POST") {
+      const user = await authenticated(req);
+      const input = await body<Record<string, unknown>>(req);
       const type = String(input.targetType || "");
       if (!(["listing","message","review","profile"] as string[]).includes(type)) fail(400, "Type de signalement invalide.");
       const targetId = text(input.targetId, "La cible", 1, 80);

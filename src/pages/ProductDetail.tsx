@@ -45,7 +45,7 @@ const ProductDetail = () => {
   }, [id]);
   useEffect(() => {
     if (!user || !id) { setFavorite(false); return; }
-    void api<{ id: string }[]>("/api/favorites").then((items) => setFavorite(items.some((item) => item.id === id))).catch(() => {});
+    void api<{ id: string }[]>("/api/favorites").then((items) => setFavorite(Array.isArray(items) && items.some((item) => item && item.id === id))).catch(() => {});
   }, [user, id]);
 
   const relatedQuery = product ? new URLSearchParams({ category: product.category }).toString() : "category=__none__";

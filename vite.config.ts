@@ -4,7 +4,7 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 import { VitePWA } from "vite-plugin-pwa";
 import type { IncomingMessage, ServerResponse } from "node:http";
-import type { handleApi as HandleApi } from "./server/api";
+import type { handleApi as HandleApi } from "./server/api.js";
 
 type ApiHandler = typeof HandleApi;
 
@@ -50,10 +50,10 @@ function localApi(handler: ApiHandler): Plugin {
 
 export default defineConfig(async ({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
-  for (const key of ["DATABASE_URL", "NEON_AUTH_JWKS_URL", "ADMIN_EMAIL_ALLOWLIST", "R2_ACCOUNT_ID", "CLOUDFLARE_ACCOUNT_ID", "R2_BUCKET_NAME", "R2_S3_ENDPOINT", "R2_ACCESS_KEY_ID", "R2_SECRET_ACCESS_KEY", "R2_PUBLIC_BASE_URL", "PUBLIC_SITE_URL"]) {
+  for (const key of ["DATABASE_URL", "NEON_AUTH_JWKS_URL", "ADMIN_EMAIL_ALLOWLIST", "R2_ACCOUNT_ID", "CLOUDFLARE_ACCOUNT_ID", "R2_BUCKET_NAME", "R2_S3_ENDPOINT", "R2_ACCESS_KEY_ID", "R2_SECRET_ACCESS_KEY", "R2_PUBLIC_BASE_URL", "R2_PUBLIC_URL", "PUBLIC_SITE_URL"]) {
     if (env[key] && !process.env[key]) process.env[key] = env[key];
   }
-  const { handleApi } = await import("./server/api");
+  const { handleApi } = await import("./server/api.js");
   return {
     // Keep one known local origin so auth redirects, R2 CORS, and browser
     // caches all use the same address instead of Vite silently picking 8083+.
@@ -87,6 +87,10 @@ export default defineConfig(async ({ mode }) => {
           navigateFallbackDenylist: [/^\/api\//],
           cleanupOutdatedCaches: true,
           runtimeCaching: [
+            {
+              urlPattern: ({ url }) => url.pathname.startsWith("/api/"),
+              handler: "NetworkOnly",
+            },
             {
               urlPattern: /^https:\/\/images\.unsplash\.com\//,
               handler: "StaleWhileRevalidate",

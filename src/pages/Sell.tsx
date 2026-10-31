@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { api } from "@/lib/api";
+import { api, assertArray } from "@/lib/api";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type Category = { id: string; name: string; slug: string };
@@ -22,27 +22,34 @@ export default function Sell() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [form, setForm] = useState({ title: "", description: "", categoryId: "", brand: "", size: "", condition: conditions[2], price: "", city: "" });
-  useEffect(() => {
-    let active = true;
-    void fetch("/api/categories", { headers: { Accept: "application/json" } })
-      .then(async (response) => {
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || "Impossible de charger les catégories.");
-        return data as Category[];
-      })
-      .then((data) => {
-        if (!active) return;
-        setCategories(data);
-        if (data[0]) setForm((current) => ({ ...current, categoryId: current.categoryId || data[0].id }));
-      })
-      .catch((cause) => { if (active) setCategoryError((cause as Error).message); })
-      .finally(() => { if (active) setCategoriesLoading(false); });
-    return () => { active = false; };
+
+  const loadCategories = useCallback(async () => {
+    setCategoriesLoading(true);
+    setCategoryError("");
+    try {
+      const data = await api<Category[]>("/api/categories");
+      const validated = assertArray<Category>(data, "catégories");
+      setCategories(validated);
+      if (validated[0]) {
+        setForm((current) => ({ ...current, categoryId: current.categoryId || validated[0].id }));
+      }
+    } catch (cause) {
+      setCategoryError(cause instanceof Error ? cause.message : "Impossible de charger les catégories.");
+      setCategories([]);
+    } finally {
+      setCategoriesLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    void loadCategories();
+  }, [loadCategories]);
+
   async function publish(event: React.FormEvent) {
     event.preventDefault(); setError("");
     if (!files.length) { setError("Ajoutez au moins une photo pour publier l'annonce."); return; }
     if (files.length > 10) { setError("Vous pouvez sélectionner jusqu'à 10 photos."); return; }
+    if (!categories.length) { setError("Les catégories doivent être chargées avant de publier."); return; }
     setBusy(true);
     let stage = "la création du brouillon";
     try {
@@ -65,6 +72,7 @@ export default function Sell() {
     }
     finally { setBusy(false); }
   }
+
   return <div className="min-h-screen bg-background"><Navbar /><main className="container mx-auto max-w-3xl px-4 pt-32 pb-20"><BackButton fallbackTo="/compte" />
     <p className="text-mono text-xs text-primary mb-3">Vendre sur Madclothes</p><h1 className="font-display text-4xl md:text-5xl font-bold mb-3">Publier un <span className="text-gradient">article</span></h1><p className="text-muted-foreground mb-8">Présentez clairement l'article et choisissez des photos nettes.</p>
     <form onSubmit={publish} className="glass rounded-2xl p-6 md:p-8 space-y-5">
@@ -74,7 +82,12 @@ export default function Sell() {
             <SelectTrigger id="listing-category" aria-label="Choisir une catégorie"><SelectValue placeholder={categoriesLoading ? "Chargement des catégories…" : "Choisir une catégorie"} /></SelectTrigger>
             <SelectContent>{categories.map((item) => <SelectItem key={item.id} value={item.id}>{item.name}</SelectItem>)}</SelectContent>
           </Select>
-          {categoryError && <p role="alert" className="text-xs text-destructive">{categoryError}</p>}
+          {categoryError && (
+            <div className="flex items-center gap-2 mt-1">
+              <p role="alert" className="text-xs text-destructive flex-1">{categoryError}</p>
+              <Button type="button" variant="ghost" size="sm" onClick={() => void loadCategories()} className="text-xs h-6 px-2">Réessayer</Button>
+            </div>
+          )}
         </div></div>
       <div className="space-y-2"><Label htmlFor="listing-description">Description</Label><Textarea id="listing-description" required maxLength={5000} rows={5} placeholder="Décrivez la coupe, la matière et l'état de l'article…" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /></div>
       <div className="grid sm:grid-cols-3 gap-4"><div className="space-y-2"><Label htmlFor="listing-brand">Marque (facultatif)</Label><Input id="listing-brand" maxLength={80} placeholder="Ex. H&amp;M" value={form.brand} onChange={(e) => setForm({ ...form, brand: e.target.value })} /></div>
@@ -83,7 +96,7 @@ export default function Sell() {
       <div className="grid sm:grid-cols-2 gap-4"><div className="space-y-2"><Label htmlFor="listing-price">Prix (FCFA)</Label><Input id="listing-price" type="number" min={1} max={10000000} step={1} required placeholder="Ex. 5000" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} /></div><div className="space-y-2"><Label htmlFor="listing-city">Ville</Label><Input id="listing-city" required maxLength={80} placeholder="Pointe-Noire" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} /></div></div>
       <div className="space-y-2"><Label htmlFor="listing-images">Photos (10 maximum, 15 Mo chacune)</Label><Input id="listing-images" type="file" accept="image/jpeg,image/png,image/webp,image/avif" multiple onChange={(e) => setFiles(Array.from(e.target.files || []))} />{files.length > 0 && <p className="text-xs text-muted-foreground">{files.length} photo{files.length > 1 ? "s" : ""} sélectionnée{files.length > 1 ? "s" : ""}</p>}</div>
       {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
-      <Button disabled={busy || !categories.length} className="rounded-full">{busy ? "Publication en cours…" : "Publier l'annonce"}</Button>
+      <Button disabled={busy || !categories.length || Boolean(categoryError)} className="rounded-full">{busy ? "Publication en cours…" : "Publier l'annonce"}</Button>
       <p className="text-xs text-muted-foreground">Les paiements restent en attente des accès et de la configuration des prestataires.</p>
     </form>
   </main><Footer /></div>;

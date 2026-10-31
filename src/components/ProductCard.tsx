@@ -11,7 +11,7 @@ export default function ProductCard({ product }: { product: Product }) {
   const [favorite, setFavorite] = useState(false);
   const [busy, setBusy] = useState(false);
   useEffect(() => {
-    if (user) void api<{ id: string }[]>("/api/favorites").then((items) => setFavorite(items.some((item) => item.id === product.id))).catch(() => {});
+    if (user) void api<{ id: string }[]>("/api/favorites").then((items) => setFavorite(Array.isArray(items) && items.some((item) => item && item.id === product.id))).catch(() => {});
     else setFavorite(false);
   }, [user, product.id]);
   async function toggleFavorite(event: React.MouseEvent) {

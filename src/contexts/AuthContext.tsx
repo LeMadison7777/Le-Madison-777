@@ -54,16 +54,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setProfileLoading(true);
     try {
       const result = await api<{ profile: Profile | null } | Profile>("/api/profile");
-      const existing = "profile" in result ? result.profile : result;
-      if (existing) {
-        setProfile(existing);
-      } else {
+      const existing = (result && typeof result === "object" && "profile" in result) ? result.profile : result;
+      if (existing && typeof existing === "object" && "id" in existing && typeof (existing as Profile).id === "string") {
+        setProfile(existing as Profile);
+      } else if (existing === null || (result && typeof result === "object" && "profile" in result && result.profile === null)) {
         const created = await api<Profile>("/api/profile", {
           method: "POST",
           body: JSON.stringify({ displayName: user.name || user.email.split("@")[0] }),
         });
-        setProfile(created);
+        if (created && typeof created === "object" && "id" in created) {
+          setProfile(created);
+        } else {
+          setProfile(null);
+        }
+      } else {
+        setProfile(null);
       }
+    } catch (err) {
+      console.error("Erreur lors de la récupération du profil:", err);
+      setProfile(null);
     } finally {
       setProfileLoading(false);
     }

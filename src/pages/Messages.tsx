@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 import BackButton from "@/components/BackButton";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { api } from "@/lib/api";
+import { api, assertArray } from "@/lib/api";
 
 type Conversation = { id: string; listingId: string; listingTitle: string; otherName: string; lastMessage: string | null; lastMessageAt: string };
 type Message = { id: string; body: string; createdAt: string; own: boolean; senderName: string };
@@ -17,8 +17,8 @@ export default function Messages() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [draft, setDraft] = useState("");
   const [error, setError] = useState("");
-  const loadConversations = useCallback(() => void api<Conversation[]>("/api/conversations").then(setConversations).catch((e) => setError((e as Error).message)), []);
-  const loadMessages = useCallback(() => { if (id) void api<Message[]>(`/api/conversations/${id}`).then(setMessages).catch((e) => setError((e as Error).message)); }, [id]);
+  const loadConversations = useCallback(() => void api<Conversation[]>("/api/conversations").then((data) => setConversations(assertArray<Conversation>(data, "conversations"))).catch((e) => setError((e as Error).message)), []);
+  const loadMessages = useCallback(() => { if (id) void api<Message[]>(`/api/conversations/${id}`).then((data) => setMessages(assertArray<Message>(data, "messages"))).catch((e) => setError((e as Error).message)); }, [id]);
   useEffect(() => { loadConversations(); }, [loadConversations]);
   useEffect(() => {
     loadMessages();

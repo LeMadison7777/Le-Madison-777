@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { api } from "@/lib/api";
+import { api, assertArray } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 
 type Report = { id: string; targetType: string; targetId: string; reason: string; status: string; createdAt: string; reporter: string };
@@ -16,7 +16,7 @@ export default function Admin() {
   const [notes, setNotes] = useState<Record<string,string>>({});
   const [sellerRate, setSellerRate] = useState("0");
   useEffect(() => { void api<{ sellerBps: number }>("/api/commissions").then((value) => setSellerRate(String(value.sellerBps / 100))).catch(() => {}); }, []);
-  const load = () => void api<Report[]>("/api/admin/reports").then(setReports).catch((e) => setError((e as Error).message));
+  const load = () => void api<Report[]>("/api/admin/reports").then((data) => setReports(assertArray<Report>(data, "signalements"))).catch((e) => setError((e as Error).message));
   useEffect(load, []);
   async function saveCommission(event: React.FormEvent) {
     event.preventDefault();

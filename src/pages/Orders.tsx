@@ -4,7 +4,7 @@ import Footer from "@/components/Footer";
 import BackButton from "@/components/BackButton";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { api } from "@/lib/api";
+import { api, assertArray } from "@/lib/api";
 
 type Order = {
   id: string;
@@ -39,7 +39,7 @@ export default function Orders() {
 
   const load = useCallback(() => {
     setError("");
-    void api<Order[]>("/api/orders").then(setItems).catch((e) => setError((e as Error).message));
+    void api<Order[]>("/api/orders").then((data) => setItems(assertArray<Order>(data, "commandes"))).catch((e) => setError((e as Error).message));
   }, []);
 
   useEffect(() => load(), [load]);
