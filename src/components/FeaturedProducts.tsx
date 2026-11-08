@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import ProductCard from "@/components/ProductCard";
+import FeaturedProductRail from "@/components/FeaturedProductRail";
 import { Button } from "@/components/ui/button";
 import { useListings } from "@/hooks/useListings";
 import { AlertCircle, RefreshCw } from "lucide-react";
@@ -9,8 +10,9 @@ const FeaturedProducts = () => {
   const { items, loading, error, retry } = useListings("", 8);
 
   return (
-    <section id="featured" className="py-24 relative">
-      <div className="container mx-auto px-4">
+    <section id="featured" className="relative isolate py-24">
+      <FeaturedProductRail />
+      <div className="container relative z-10 mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}

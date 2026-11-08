@@ -1,0 +1,1280 @@
+﻿{
+  "auditReportVersion": 2,
+  "vulnerabilities": {
+    "@better-auth/drizzle-adapter": {
+      "name": "@better-auth/drizzle-adapter",
+      "severity": "low",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1243465,
+          "name": "@better-auth/drizzle-adapter",
+          "dependency": "@better-auth/drizzle-adapter",
+          "title": "@better-auth/drizzle-adapter: Concurrent requests can exceed rate limits on PostgreSQL",
+          "url": "https://github.com/advisories/GHSA-44jh-23m7-hpcf",
+          "severity": "low",
+          "cwe": [
+            "CWE-307",
+            "CWE-362"
+          ],
+          "cvss": {
+            "score": 3.7,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N"
+          },
+          "range": ">=1.6.17 <1.7.7"
+        }
+      ],
+      "effects": [
+        "better-auth"
+      ],
+      "range": "1.6.17 - 1.7.6",
+      "nodes": [
+        "node_modules/better-auth/node_modules/@better-auth/drizzle-adapter"
+      ],
+      "fixAvailable": {
+        "isSemVerMajor": true
+      }
+    },
+    "@daveyplate/better-auth-ui": {
+      "name": "@daveyplate/better-auth-ui",
+      "severity": "low",
+      "isDirect": false,
+      "via": [
+        "@react-email/components"
+      ],
+      "effects": [
+        "@neondatabase/auth-ui"
+      ],
+      "range": ">=1.2.0",
+      "nodes": [
+        "node_modules/@neondatabase/auth-ui/node_modules/@daveyplate/better-auth-ui"
+      ],
+      "fixAvailable": {
+        "isSemVerMajor": true
+      }
+    },
+    "@eslint-community/eslint-utils": {
+      "name": "@eslint-community/eslint-utils",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "eslint"
+      ],
+      "effects": [
+        "@typescript-eslint/utils",
+        "eslint"
+      ],
+      "range": "*",
+      "nodes": [
+        "node_modules/@eslint-community/eslint-utils"
+      ],
+      "fixAvailable": {
+        "name": "typescript-eslint",
+        "version": "8.14.0",
+        "isSemVerMajor": true
+      }
+    },
+    "@eslint/config-array": {
+      "name": "@eslint/config-array",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "minimatch"
+      ],
+      "effects": [
+        "eslint"
+      ],
+      "range": "*",
+      "nodes": [
+        "node_modules/@eslint/config-array"
+      ],
+      "fixAvailable": {
+        "name": "typescript-eslint",
+        "version": "8.14.0",
+        "isSemVerMajor": true
+      }
+    },
+    "@eslint/eslintrc": {
+      "name": "@eslint/eslintrc",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "minimatch"
+      ],
+      "effects": [
+        "eslint"
+      ],
+      "range": "0.0.1 || >=0.1.1",
+      "nodes": [
+        "node_modules/@eslint/eslintrc"
+      ],
+      "fixAvailable": {
+        "name": "typescript-eslint",
+        "version": "8.14.0",
+        "isSemVerMajor": true
+      }
+    },
+    "@neondatabase/auth": {
+      "name": "@neondatabase/auth",
+      "severity": "high",
+      "isDirect": true,
+      "via": [
+        "@neondatabase/auth-ui",
+        "better-auth",
+        "zod"
+      ],
+      "effects": [
+        "@neondatabase/auth-ui"
+      ],
+      "range": "*",
+      "nodes": [
+        "node_modules/@neondatabase/auth"
+      ],
+      "fixAvailable": {
+        "isSemVerMajor": true
+      }
+    },
+    "@neondatabase/auth-ui": {
+      "name": "@neondatabase/auth-ui",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@daveyplate/better-auth-ui",
+        "@neondatabase/auth",
+        "better-auth",
+        "zod"
+      ],
+      "effects": [
+        "@neondatabase/auth"
+      ],
+      "range": "*",
+      "nodes": [
+        "node_modules/@neondatabase/auth-ui"
+      ],
+      "fixAvailable": {
+        "isSemVerMajor": true
+      }
+    },
+    "@react-email/components": {
+      "name": "@react-email/components",
+      "severity": "low",
+      "isDirect": false,
+      "via": [
+        "@react-email/render"
+      ],
+      "effects": [
+        "@daveyplate/better-auth-ui"
+      ],
+      "range": "*",
+      "nodes": [
+        "node_modules/@react-email/components"
+      ],
+      "fixAvailable": {
+        "isSemVerMajor": true
+      }
+    },
+    "@react-email/render": {
+      "name": "@react-email/render",
+      "severity": "low",
+      "isDirect": false,
+      "via": [
+        "html-to-text"
+      ],
+      "effects": [
+        "@react-email/components"
+      ],
+      "range": "0.0.4 - 2.1.1",
+      "nodes": [
+        "node_modules/@react-email/render"
+      ],
+      "fixAvailable": {
+        "isSemVerMajor": true
+      }
+    },
+    "@rollup/plugin-node-resolve": {
+      "name": "@rollup/plugin-node-resolve",
+      "severity": "low",
+      "isDirect": false,
+      "via": [
+        "deepmerge"
+      ],
+      "effects": [
+        "workbox-build"
+      ],
+      "range": ">=8.0.0",
+      "nodes": [
+        "node_modules/@rollup/plugin-node-resolve"
+      ],
+      "fixAvailable": {
+        "name": "vite-plugin-pwa",
+        "version": "1.1.0",
+        "isSemVerMajor": true
+      }
+    },
+    "@tailwindcss/typography": {
+      "name": "@tailwindcss/typography",
+      "severity": "moderate",
+      "isDirect": true,
+      "via": [
+        "postcss-selector-parser"
+      ],
+      "effects": [],
+      "range": "<=0.0.0-insiders.fda8ce5 || >=0.5.5",
+      "nodes": [
+        "node_modules/@tailwindcss/typography"
+      ],
+      "fixAvailable": {
+        "name": "@tailwindcss/typography",
+        "version": "0.5.4",
+        "isSemVerMajor": true
+      }
+    },
+    "@trickfilm400/rollup-plugin-off-main-thread": {
+      "name": "@trickfilm400/rollup-plugin-off-main-thread",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "ejs"
+      ],
+      "effects": [
+        "workbox-build"
+      ],
+      "range": "<=3.1.0-pre2",
+      "nodes": [
+        "node_modules/@trickfilm400/rollup-plugin-off-main-thread"
+      ],
+      "fixAvailable": {
+        "name": "vite-plugin-pwa",
+        "version": "1.1.0",
+        "isSemVerMajor": true
+      }
+    },
+    "@typescript-eslint/eslint-plugin": {
+      "name": "@typescript-eslint/eslint-plugin",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "@typescript-eslint/parser",
+        "@typescript-eslint/type-utils",
+        "@typescript-eslint/utils",
+        "eslint"
+      ],
+      "effects": [
+        "typescript-eslint"
+      ],
+      "range": "*",
+      "nodes": [
+        "node_modules/@typescript-eslint/eslint-plugin"
+      ],
+      "fixAvailable": {
+        "name": "typescript-eslint",
+        "version": "8.14.0",
+        "isSemVerMajor": true
+      }
+    },
+    "@typescript-eslint/parser": {
+      "name": "@typescript-eslint/parser",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "@typescript-eslint/typescript-estree",
+        "eslint"
+      ],
+      "effects": [
+        "@typescript-eslint/eslint-plugin",
+        "typescript-eslint"
+      ],
+      "range": "*",
+      "nodes": [
+        "node_modules/@typescript-eslint/parser"
+      ],
+      "fixAvailable": {
+        "name": "typescript-eslint",
+        "version": "8.14.0",
+        "isSemVerMajor": true
+      }
+    },
+    "@typescript-eslint/type-utils": {
+      "name": "@typescript-eslint/type-utils",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "@typescript-eslint/typescript-estree",
+        "@typescript-eslint/utils",
+        "eslint"
+      ],
+      "effects": [
+        "@typescript-eslint/eslint-plugin"
+      ],
+      "range": ">=5.9.2-alpha.0",
+      "nodes": [
+        "node_modules/@typescript-eslint/type-utils"
+      ],
+      "fixAvailable": {
+        "name": "typescript-eslint",
+        "version": "8.14.0",
+        "isSemVerMajor": true
+      }
+    },
+    "@typescript-eslint/typescript-estree": {
+      "name": "@typescript-eslint/typescript-estree",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "minimatch"
+      ],
+      "effects": [
+        "@typescript-eslint/parser",
+        "@typescript-eslint/type-utils",
+        "@typescript-eslint/utils",
+        "typescript-eslint"
+      ],
+      "range": ">=6.16.0",
+      "nodes": [
+        "node_modules/@typescript-eslint/typescript-estree"
+      ],
+      "fixAvailable": {
+        "name": "typescript-eslint",
+        "version": "8.14.0",
+        "isSemVerMajor": true
+      }
+    },
+    "@typescript-eslint/utils": {
+      "name": "@typescript-eslint/utils",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "@eslint-community/eslint-utils",
+        "@typescript-eslint/typescript-estree",
+        "eslint"
+      ],
+      "effects": [
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/type-utils",
+        "typescript-eslint"
+      ],
+      "range": "*",
+      "nodes": [
+        "node_modules/@typescript-eslint/utils"
+      ],
+      "fixAvailable": {
+        "name": "typescript-eslint",
+        "version": "8.14.0",
+        "isSemVerMajor": true
+      }
+    },
+    "@vercel/cli-config": {
+      "name": "@vercel/cli-config",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "zod"
+      ],
+      "effects": [
+        "@vercel/oidc"
+      ],
+      "range": "*",
+      "nodes": [
+        "node_modules/@vercel/cli-config"
+      ],
+      "fixAvailable": {
+        "name": "@vercel/functions",
+        "version": "3.6.1",
+        "isSemVerMajor": true
+      }
+    },
+    "@vercel/functions": {
+      "name": "@vercel/functions",
+      "severity": "high",
+      "isDirect": true,
+      "via": [
+        "@vercel/oidc"
+      ],
+      "effects": [],
+      "range": ">=3.6.2",
+      "nodes": [
+        "node_modules/@vercel/functions"
+      ],
+      "fixAvailable": {
+        "name": "@vercel/functions",
+        "version": "3.6.1",
+        "isSemVerMajor": true
+      }
+    },
+    "@vercel/oidc": {
+      "name": "@vercel/oidc",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@vercel/cli-config"
+      ],
+      "effects": [
+        "@vercel/functions"
+      ],
+      "range": ">=3.6.0",
+      "nodes": [
+        "node_modules/@vercel/oidc"
+      ],
+      "fixAvailable": {
+        "name": "@vercel/functions",
+        "version": "3.6.1",
+        "isSemVerMajor": true
+      }
+    },
+    "@vitest/mocker": {
+      "name": "@vitest/mocker",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1193684,
+          "name": "@vitest/mocker",
+          "dependency": "@vitest/mocker",
+          "title": "Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock",
+          "url": "https://github.com/advisories/GHSA-82fw-gwwq-j7x9",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-22"
+          ],
+          "cvss": {
+            "score": 5.9,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N"
+          },
+          "range": ">=2.1.0 <4.1.11"
+        },
+        {
+          "source": 1242767,
+          "name": "@vitest/mocker",
+          "dependency": "@vitest/mocker",
+          "title": "Vitest: Code injection via unauthenticated manual mock registration",
+          "url": "https://github.com/advisories/GHSA-qxg6-89mg-rqv8",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-94",
+            "CWE-116",
+            "CWE-306"
+          ],
+          "cvss": {
+            "score": 4.7,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:C/C:L/I:L/A:N"
+          },
+          "range": ">=2.1.0-beta.7 <4.1.12"
+        }
+      ],
+      "effects": [
+        "vitest"
+      ],
+      "range": "<=4.1.11",
+      "nodes": [
+        "node_modules/@vitest/mocker"
+      ],
+      "fixAvailable": {
+        "name": "vitest",
+        "version": "5.0.5",
+        "isSemVerMajor": true
+      }
+    },
+    "better-auth": {
+      "name": "better-auth",
+      "severity": "critical",
+      "isDirect": false,
+      "via": [
+        "@better-auth/drizzle-adapter",
+        {
+          "source": 1243463,
+          "name": "better-auth",
+          "dependency": "better-auth",
+          "title": "@better-auth/drizzle-adapter: Concurrent requests can exceed rate limits on PostgreSQL",
+          "url": "https://github.com/advisories/GHSA-44jh-23m7-hpcf",
+          "severity": "low",
+          "cwe": [
+            "CWE-307",
+            "CWE-362"
+          ],
+          "cvss": {
+            "score": 3.7,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N"
+          },
+          "range": ">=1.6.17 <1.7.7"
+        },
+        {
+          "source": 1243466,
+          "name": "better-auth",
+          "dependency": "better-auth",
+          "title": "better-auth: OAuth Proxy lets an attacker sign in as another user",
+          "url": "https://github.com/advisories/GHSA-r4xp-prcw-77qf",
+          "severity": "high",
+          "cwe": [
+            "CWE-287",
+            "CWE-345"
+          ],
+          "cvss": {
+            "score": 7.4,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N"
+          },
+          "range": ">=1.5.0-beta.12 <1.7.7"
+        },
+        {
+          "source": 1243467,
+          "name": "better-auth",
+          "dependency": "better-auth",
+          "title": "better-auth: OAuth state can be used as a Magic Link to sign in as another user",
+          "url": "https://github.com/advisories/GHSA-965c-763c-88jm",
+          "severity": "critical",
+          "cwe": [
+            "CWE-287"
+          ],
+          "cvss": {
+            "score": 9.1,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N"
+          },
+          "range": ">=1.4.0-beta.18 <1.7.7"
+        }
+      ],
+      "effects": [
+        "@neondatabase/auth",
+        "@neondatabase/auth-ui"
+      ],
+      "range": "1.4.0-beta.18 - 1.7.6",
+      "nodes": [
+        "node_modules/better-auth"
+      ],
+      "fixAvailable": {
+        "isSemVerMajor": true
+      }
+    },
+    "deepmerge": {
+      "name": "deepmerge",
+      "severity": "low",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1243505,
+          "name": "deepmerge",
+          "dependency": "deepmerge",
+          "title": "deepmerge mergeObject() allows prototype poisoning of returned objects",
+          "url": "https://github.com/advisories/GHSA-gcqx-w48m-w2h4",
+          "severity": "low",
+          "cwe": [
+            "CWE-1321"
+          ],
+          "cvss": {
+            "score": 5.3,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:N"
+          },
+          "range": ">=4.2.0 <=4.3.1"
+        }
+      ],
+      "effects": [
+        "@rollup/plugin-node-resolve",
+        "html-to-text"
+      ],
+      "range": ">=4.2.0",
+      "nodes": [
+        "node_modules/deepmerge"
+      ],
+      "fixAvailable": {
+        "name": "vite-plugin-pwa",
+        "version": "1.1.0",
+        "isSemVerMajor": true
+      }
+    },
+    "ejs": {
+      "name": "ejs",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "jake"
+      ],
+      "effects": [
+        "@trickfilm400/rollup-plugin-off-main-thread"
+      ],
+      "range": "3.1.2 - 4.0.1",
+      "nodes": [
+        "node_modules/ejs"
+      ],
+      "fixAvailable": {
+        "name": "vite-plugin-pwa",
+        "version": "1.1.0",
+        "isSemVerMajor": true
+      }
+    },
+    "esbuild": {
+      "name": "esbuild",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1102341,
+          "name": "esbuild",
+          "dependency": "esbuild",
+          "title": "esbuild enables any website to send any requests to the development server and read the response",
+          "url": "https://github.com/advisories/GHSA-67mh-4wv8-2f99",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-346"
+          ],
+          "cvss": {
+            "score": 5.3,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:H/I:N/A:N"
+          },
+          "range": "<=0.24.2"
+        }
+      ],
+      "effects": [
+        "vite"
+      ],
+      "range": "<=0.24.2",
+      "nodes": [
+        "node_modules/vite/node_modules/esbuild"
+      ],
+      "fixAvailable": {
+        "name": "vite",
+        "version": "8.3.5",
+        "isSemVerMajor": true
+      }
+    },
+    "eslint": {
+      "name": "eslint",
+      "severity": "moderate",
+      "isDirect": true,
+      "via": [
+        "@eslint-community/eslint-utils",
+        "@eslint/config-array",
+        "@eslint/eslintrc",
+        "minimatch"
+      ],
+      "effects": [
+        "@eslint-community/eslint-utils",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "@typescript-eslint/type-utils",
+        "@typescript-eslint/utils",
+        "eslint-plugin-react-refresh",
+        "typescript-eslint"
+      ],
+      "range": "0.7.1 - 2.0.0-rc.1 || >=4.1.0",
+      "nodes": [
+        "node_modules/eslint"
+      ],
+      "fixAvailable": {
+        "name": "typescript-eslint",
+        "version": "8.14.0",
+        "isSemVerMajor": true
+      }
+    },
+    "eslint-plugin-react-refresh": {
+      "name": "eslint-plugin-react-refresh",
+      "severity": "moderate",
+      "isDirect": true,
+      "via": [
+        "eslint"
+      ],
+      "effects": [],
+      "range": "*",
+      "nodes": [
+        "node_modules/eslint-plugin-react-refresh"
+      ],
+      "fixAvailable": false
+    },
+    "filelist": {
+      "name": "filelist",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "minimatch"
+      ],
+      "effects": [
+        "jake"
+      ],
+      "range": ">=0.0.2",
+      "nodes": [
+        "node_modules/filelist"
+      ],
+      "fixAvailable": {
+        "name": "vite-plugin-pwa",
+        "version": "1.1.0",
+        "isSemVerMajor": true
+      }
+    },
+    "glob": {
+      "name": "glob",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1244013,
+          "name": "glob",
+          "dependency": "glob",
+          "title": "Glob: AbortSignal cancellation bypass allows post-timeout filesystem traversal",
+          "url": "https://github.com/advisories/GHSA-3g3m-2fjr-6pw4",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-400"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": ">=9.0.0 <=14.0.1"
+        },
+        "minimatch"
+      ],
+      "effects": [
+        "workbox-build"
+      ],
+      "range": "3.0.0 - 14.0.1",
+      "nodes": [
+        "node_modules/glob"
+      ],
+      "fixAvailable": {
+        "name": "vite-plugin-pwa",
+        "version": "1.1.0",
+        "isSemVerMajor": true
+      }
+    },
+    "html-to-text": {
+      "name": "html-to-text",
+      "severity": "low",
+      "isDirect": false,
+      "via": [
+        "deepmerge"
+      ],
+      "effects": [
+        "@react-email/render"
+      ],
+      "range": "6.0.0 - 9.0.5",
+      "nodes": [
+        "node_modules/html-to-text"
+      ],
+      "fixAvailable": {
+        "isSemVerMajor": true
+      }
+    },
+    "jake": {
+      "name": "jake",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "filelist"
+      ],
+      "effects": [
+        "ejs"
+      ],
+      "range": ">=10.6.1",
+      "nodes": [
+        "node_modules/jake"
+      ],
+      "fixAvailable": {
+        "name": "vite-plugin-pwa",
+        "version": "1.1.0",
+        "isSemVerMajor": true
+      }
+    },
+    "minimatch": {
+      "name": "minimatch",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1244012,
+          "name": "minimatch",
+          "dependency": "minimatch",
+          "title": "minimatch has potential denial of service via globparts amplification",
+          "url": "https://github.com/advisories/GHSA-g3hv-75wg-m249",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-405"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": "<11.0.1"
+        }
+      ],
+      "effects": [
+        "@eslint/config-array",
+        "@eslint/eslintrc",
+        "@typescript-eslint/typescript-estree",
+        "eslint",
+        "filelist",
+        "glob"
+      ],
+      "range": "<11.0.1",
+      "nodes": [
+        "node_modules/@typescript-eslint/typescript-estree/node_modules/minimatch",
+        "node_modules/filelist/node_modules/minimatch",
+        "node_modules/glob/node_modules/minimatch",
+        "node_modules/minimatch"
+      ],
+      "fixAvailable": {
+        "name": "typescript-eslint",
+        "version": "8.14.0",
+        "isSemVerMajor": true
+      }
+    },
+    "postcss-selector-parser": {
+      "name": "postcss-selector-parser",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1243379,
+          "name": "postcss-selector-parser",
+          "dependency": "postcss-selector-parser",
+          "title": "PostCSS: Quadratic complexity in flat selector parsing allows CPU exhaustion",
+          "url": "https://github.com/advisories/GHSA-rj75-hqrm-r3gf",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-400",
+            "CWE-407"
+          ],
+          "cvss": {
+            "score": 5.9,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": "<6.1.5"
+        }
+      ],
+      "effects": [
+        "@tailwindcss/typography"
+      ],
+      "range": "<6.1.5",
+      "nodes": [
+        "node_modules/postcss-selector-parser"
+      ],
+      "fixAvailable": {
+        "name": "@tailwindcss/typography",
+        "version": "0.5.4",
+        "isSemVerMajor": true
+      }
+    },
+    "react-router": {
+      "name": "react-router",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1124268,
+          "name": "react-router",
+          "dependency": "react-router",
+          "title": "React Router: Open redirect via backslash in <Link> and useNavigate (CVE-2025-68470 bypass)",
+          "url": "https://github.com/advisories/GHSA-wrjc-x8rr-h8h6",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-601"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": ">=6.0.0 <7.18.0"
+        },
+        {
+          "source": 1124272,
+          "name": "react-router",
+          "dependency": "react-router",
+          "title": "React Router: Arbitrary Constructor Injection via deserializeErrors() in React Router SSR Hydration",
+          "url": "https://github.com/advisories/GHSA-337j-9hxr-rhxg",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-470"
+          ],
+          "cvss": {
+            "score": 6.1,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N"
+          },
+          "range": ">=6.4.0 <7.18.0"
+        }
+      ],
+      "effects": [
+        "react-router-dom"
+      ],
+      "range": "6.0.0 - 7.17.0",
+      "nodes": [
+        "node_modules/react-router"
+      ],
+      "fixAvailable": {
+        "name": "react-router-dom",
+        "version": "7.18.5",
+        "isSemVerMajor": true
+      }
+    },
+    "react-router-dom": {
+      "name": "react-router-dom",
+      "severity": "moderate",
+      "isDirect": true,
+      "via": [
+        "react-router"
+      ],
+      "effects": [],
+      "range": "6.0.0-alpha.0 - 7.17.0",
+      "nodes": [
+        "node_modules/react-router-dom"
+      ],
+      "fixAvailable": {
+        "name": "react-router-dom",
+        "version": "7.18.5",
+        "isSemVerMajor": true
+      }
+    },
+    "tinypool": {
+      "name": "tinypool",
+      "severity": "critical",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1241260,
+          "name": "tinypool",
+          "dependency": "tinypool",
+          "title": "Tinypool: Prototype Pollution gadget in worker options leads to Remote Code Execution",
+          "url": "https://github.com/advisories/GHSA-5gmw-xhrv-c9v3",
+          "severity": "critical",
+          "cwe": [
+            "CWE-1321"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": "<=2.1.0"
+        },
+        {
+          "source": 1241261,
+          "name": "tinypool",
+          "dependency": "tinypool",
+          "title": "Tinypool: Prototype Pollution Gadget to RCE in run() options",
+          "url": "https://github.com/advisories/GHSA-85c8-ppgw-ccpr",
+          "severity": "critical",
+          "cwe": [
+            "CWE-94",
+            "CWE-1321"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": "<2.1.2"
+        }
+      ],
+      "effects": [
+        "vitest"
+      ],
+      "range": "<=2.1.1",
+      "nodes": [
+        "node_modules/tinypool"
+      ],
+      "fixAvailable": {
+        "name": "vitest",
+        "version": "5.0.5",
+        "isSemVerMajor": true
+      }
+    },
+    "typescript-eslint": {
+      "name": "typescript-eslint",
+      "severity": "moderate",
+      "isDirect": true,
+      "via": [
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "@typescript-eslint/typescript-estree",
+        "@typescript-eslint/utils",
+        "eslint"
+      ],
+      "effects": [],
+      "range": "*",
+      "nodes": [
+        "node_modules/typescript-eslint"
+      ],
+      "fixAvailable": {
+        "name": "typescript-eslint",
+        "version": "8.14.0",
+        "isSemVerMajor": true
+      }
+    },
+    "vite": {
+      "name": "vite",
+      "severity": "high",
+      "isDirect": true,
+      "via": [
+        {
+          "source": 1116229,
+          "name": "vite",
+          "dependency": "vite",
+          "title": "Vite Vulnerable to Path Traversal in Optimized Deps `.map` Handling",
+          "url": "https://github.com/advisories/GHSA-4w7w-66w2-5vf9",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-22",
+            "CWE-200"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": "<=6.4.1"
+        },
+        {
+          "source": 1120784,
+          "name": "vite",
+          "dependency": "vite",
+          "title": "launch-editor: NTLMv2 hash disclosure via UNC path handling on Windows",
+          "url": "https://github.com/advisories/GHSA-v6wh-96g9-6wx3",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-73",
+            "CWE-522"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": "<=6.4.2"
+        },
+        {
+          "source": 1242622,
+          "name": "vite",
+          "dependency": "vite",
+          "title": "launch-editor: escapeCmdArgs() omits % escaping on Windows",
+          "url": "https://github.com/advisories/GHSA-698v-4r3x-3vcv",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-78"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": "<=6.4.3"
+        },
+        {
+          "source": 1242651,
+          "name": "vite",
+          "dependency": "vite",
+          "title": "launch-editor: Editor CLI flag misinterpretation causing arbitrary command execution for some editors",
+          "url": "https://github.com/advisories/GHSA-r825-w8mm-5pxw",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-88"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": "<=6.4.3"
+        },
+        {
+          "source": 1242658,
+          "name": "vite",
+          "dependency": "vite",
+          "title": "launch-editor: `fs.existsSync()` existence check can be bypassed on Windows",
+          "url": "https://github.com/advisories/GHSA-587h-7wmj-h5pm",
+          "severity": "high",
+          "cwe": [
+            "CWE-77"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": "<=6.4.3"
+        },
+        {
+          "source": 1242724,
+          "name": "vite",
+          "dependency": "vite",
+          "title": "Vite: Cross origin script execution through Vite custom middleware",
+          "url": "https://github.com/advisories/GHSA-9jrq-w75r-8gcw",
+          "severity": "low",
+          "cwe": [
+            "CWE-80"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": "<=6.4.3"
+        },
+        {
+          "source": 1242730,
+          "name": "vite",
+          "dependency": "vite",
+          "title": "Vite: Files outside `server.fs.allow` could be served when project paths match system paths on non-Windows machine",
+          "url": "https://github.com/advisories/GHSA-rq7h-c2jc-7f22",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-22",
+            "CWE-284"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": "<=6.4.3"
+        },
+        {
+          "source": 1243432,
+          "name": "vite",
+          "dependency": "vite",
+          "title": "vite: `server.fs.deny` bypass on Windows alternate paths",
+          "url": "https://github.com/advisories/GHSA-fx2h-pf6j-xcff",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-22",
+            "CWE-200"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": "<=6.4.2"
+        },
+        "esbuild"
+      ],
+      "effects": [],
+      "range": "<=6.4.3",
+      "nodes": [
+        "node_modules/vite"
+      ],
+      "fixAvailable": {
+        "name": "vite",
+        "version": "8.3.5",
+        "isSemVerMajor": true
+      }
+    },
+    "vite-plugin-pwa": {
+      "name": "vite-plugin-pwa",
+      "severity": "moderate",
+      "isDirect": true,
+      "via": [
+        "workbox-build"
+      ],
+      "effects": [],
+      "range": ">=1.2.0",
+      "nodes": [
+        "node_modules/vite-plugin-pwa"
+      ],
+      "fixAvailable": {
+        "name": "vite-plugin-pwa",
+        "version": "1.1.0",
+        "isSemVerMajor": true
+      }
+    },
+    "vitest": {
+      "name": "vitest",
+      "severity": "critical",
+      "isDirect": true,
+      "via": [
+        "@vitest/mocker",
+        {
+          "source": 1193683,
+          "name": "vitest",
+          "dependency": "vitest",
+          "title": "Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock",
+          "url": "https://github.com/advisories/GHSA-82fw-gwwq-j7x9",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-22"
+          ],
+          "cvss": {
+            "score": 5.9,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N"
+          },
+          "range": ">=2.1.0 <4.1.11"
+        },
+        "tinypool"
+      ],
+      "effects": [],
+      "range": "0.0.95 - 4.1.10",
+      "nodes": [
+        "node_modules/vitest"
+      ],
+      "fixAvailable": {
+        "name": "vitest",
+        "version": "5.0.5",
+        "isSemVerMajor": true
+      }
+    },
+    "workbox-build": {
+      "name": "workbox-build",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "@rollup/plugin-node-resolve",
+        "@trickfilm400/rollup-plugin-off-main-thread",
+        "glob"
+      ],
+      "effects": [
+        "vite-plugin-pwa"
+      ],
+      "range": ">=6.0.0-alpha.0",
+      "nodes": [
+        "node_modules/workbox-build"
+      ],
+      "fixAvailable": {
+        "name": "vite-plugin-pwa",
+        "version": "1.1.0",
+        "isSemVerMajor": true
+      }
+    },
+    "zod": {
+      "name": "zod",
+      "severity": "high",
+      "isDirect": true,
+      "via": [
+        {
+          "source": 1243066,
+          "name": "zod",
+          "dependency": "zod",
+          "title": "Zod can exhaust memory while validating oversized constrained collections",
+          "url": "https://github.com/advisories/GHSA-mrhx-c7xc-m3w5",
+          "severity": "high",
+          "cwe": [
+            "CWE-770"
+          ],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": "<4.6.6"
+        }
+      ],
+      "effects": [
+        "@neondatabase/auth",
+        "@neondatabase/auth-ui",
+        "@vercel/cli-config"
+      ],
+      "range": "<4.6.6",
+      "nodes": [
+        "node_modules/@neondatabase/auth-ui/node_modules/zod",
+        "node_modules/@neondatabase/auth/node_modules/zod",
+        "node_modules/@vercel/cli-config/node_modules/zod",
+        "node_modules/zod"
+      ],
+      "fixAvailable": {
+        "name": "zod",
+        "version": "4.6.7",
+        "isSemVerMajor": true
+      }
+    }
+  },
+  "metadata": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 7,
+      "moderate": 25,
+      "high": 7,
+      "critical": 3,
+      "total": 42
+    },
+    "dependencies": {
+      "prod": 888,
+      "dev": 157,
+      "optional": 127,
+      "peer": 74,
+      "peerOptional": 0,
+      "total": 1161
+    }
+  }
+}

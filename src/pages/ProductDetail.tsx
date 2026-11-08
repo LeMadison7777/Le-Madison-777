@@ -19,7 +19,7 @@ import { useListings } from "@/hooks/useListings";
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -39,7 +39,10 @@ const ProductDetail = () => {
     if (!id) return;
     setLoading(true);
     void api<Product & { images?: Product["images"] }>(`/api/listings/${id}`)
-      .then((item) => setProduct({ ...item, img: item.images?.[0]?.url || "/images/product-placeholder.svg" }))
+      .then((item) => {
+        setProduct({ ...item, img: item.images?.[0]?.url || "/images/product-placeholder.svg" });
+        if (item.city) setCity(item.city);
+      })
       .catch((cause) => setError((cause as Error).message))
       .finally(() => setLoading(false));
   }, [id]);
@@ -50,6 +53,7 @@ const ProductDetail = () => {
 
   const relatedQuery = product ? new URLSearchParams({ category: product.category }).toString() : "category=__none__";
   const { items: related } = useListings(relatedQuery, 4);
+  const isOwner = Boolean(profile && product && product.sellerId && profile.id === product.sellerId);
 
   async function toggleFavorite() {
     if (!user) { window.dispatchEvent(new CustomEvent("madclothes:auth-required")); return; }
@@ -59,19 +63,25 @@ const ProductDetail = () => {
   async function placeOrder(event: React.FormEvent) {
     event.preventDefault();
     if (!user) { window.dispatchEvent(new CustomEvent("madclothes:auth-required")); return; }
+    if (isOwner) { setNotice("Vous ne pouvez pas acheter votre propre annonce."); return; }
+    const requestedCity = city.trim();
+    if (requestedCity.length < 2) { setNotice("Indiquez une ville d’au moins 2 caractères."); return; }
     setBusy(true); setNotice("");
     try {
-      const order = await api<{ id: string; message: string }>("/api/orders", { method: "POST", body: JSON.stringify({ listingId: id, deliveryMethod: delivery, city, details }) });
+      const order = await api<{ id: string; message: string }>("/api/orders", { method: "POST", body: JSON.stringify({ listingId: id, deliveryMethod: delivery, city: requestedCity, details: details.trim() }) });
       setNotice(order.message); setOrderOpen(false); navigate("/commandes");
-    } catch (cause) { setNotice((cause as Error).message); }
+    } catch (cause) { setNotice(cause instanceof Error ? cause.message : "Impossible d’enregistrer la demande."); }
     finally { setBusy(false); }
   }
   async function contactSeller(event: React.FormEvent) {
     event.preventDefault();
     if (!user) { window.dispatchEvent(new CustomEvent("madclothes:auth-required")); return; }
-    setBusy(true);
-    try { const conversation = await api<{ id: string }>("/api/conversations", { method: "POST", body: JSON.stringify({ listingId: id, message }) }); navigate(`/messages/${conversation.id}`); }
-    catch (cause) { setNotice((cause as Error).message); }
+    if (isOwner) { setNotice("Vous êtes le vendeur de cette annonce."); return; }
+    const cleanMessage = message.trim();
+    if (!cleanMessage) { setNotice("Écrivez un message avant de l’envoyer."); return; }
+    setBusy(true); setNotice("");
+    try { const conversation = await api<{ id: string }>("/api/conversations", { method: "POST", body: JSON.stringify({ listingId: id, message: cleanMessage }) }); setMessage(""); navigate(`/messages/${conversation.id}`); }
+    catch (cause) { setNotice(cause instanceof Error ? cause.message : "Impossible d’ouvrir la conversation."); }
     finally { setBusy(false); }
   }
   async function report(event: React.FormEvent) {
@@ -88,9 +98,26 @@ const ProductDetail = () => {
       <div className="grid lg:grid-cols-2 gap-10"><motion.div initial={{ opacity: 0, scale: .98 }} animate={{ opacity: 1, scale: 1 }} className="relative glass rounded-2xl overflow-hidden aspect-square"><img src={product.img} alt={product.name} className="w-full h-full object-cover bg-white/5" /><span className={`absolute top-4 left-4 text-xs px-3 py-1 rounded-full border backdrop-blur-md ${conditionStyles[product.condition]}`}>{product.condition}</span></motion.div>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col"><p className="text-mono text-xs text-primary mb-3">{product.category}</p><h1 className="font-display text-3xl md:text-5xl font-bold mb-3">{product.name}</h1><p className="text-muted-foreground mb-6">{product.brand || "Sans marque"}{product.size ? ` · Taille ${product.size}` : ""}</p><p className="font-display text-4xl font-bold text-primary mb-6">{product.price.toLocaleString("fr-FR")} <span className="text-base text-muted-foreground font-body font-normal">FCFA</span></p><p className="flex items-center gap-2 text-sm text-muted-foreground mb-5"><MapPin size={14} /> {product.location}</p>{product.description && <p className="whitespace-pre-line leading-relaxed mb-6">{product.description}</p>}<p className="text-sm text-muted-foreground mb-8">Vendu par {product.seller || "un membre Madclothes"}</p>
           {notice && <p role="status" className="mb-4 rounded-xl bg-primary/10 p-3 text-sm">{notice}</p>}
-          <div className="flex flex-col sm:flex-row gap-3 mb-8"><Button onClick={() => setOrderOpen(!orderOpen)} className="rounded-full flex-1" size="lg">Demander cet article</Button><Button onClick={toggleFavorite} aria-pressed={favorite} variant="outline" size="lg" className="rounded-full border-white/15 gap-2"><Heart size={16} fill={favorite ? "currentColor" : "none"} />{favorite ? "Dans mes favoris" : "Ajouter aux favoris"}</Button><Button onClick={() => setMessageOpen(!messageOpen)} variant="outline" size="lg" className="rounded-full border-white/15 gap-2"><MessageCircle size={16} /> Écrire</Button></div>
+          {isOwner ? (
+            <div className="flex flex-col sm:flex-row gap-3 mb-8">
+              <Link to="/compte" className="flex-1">
+                <Button variant="secondary" size="lg" className="rounded-full w-full">
+                  Gérer cette annonce dans mon compte
+                </Button>
+              </Link>
+              <Button onClick={toggleFavorite} aria-pressed={favorite} variant="outline" size="lg" className="rounded-full border-white/15 gap-2">
+                <Heart size={16} fill={favorite ? "currentColor" : "none"} />{favorite ? "Dans mes favoris" : "Ajouter aux favoris"}
+              </Button>
+            </div>
+          ) : (
+            <div className="flex flex-col sm:flex-row gap-3 mb-8">
+              <Button onClick={() => { if (!user) { window.dispatchEvent(new CustomEvent("madclothes:auth-required")); return; } setOrderOpen(!orderOpen); setMessageOpen(false); }} className="rounded-full flex-1" size="lg">Demander cet article</Button>
+              <Button onClick={toggleFavorite} aria-pressed={favorite} variant="outline" size="lg" className="rounded-full border-white/15 gap-2"><Heart size={16} fill={favorite ? "currentColor" : "none"} />{favorite ? "Dans mes favoris" : "Ajouter aux favoris"}</Button>
+              <Button onClick={() => { if (!user) { window.dispatchEvent(new CustomEvent("madclothes:auth-required")); return; } setMessageOpen(!messageOpen); setOrderOpen(false); }} variant="outline" size="lg" className="rounded-full border-white/15 gap-2"><MessageCircle size={16} /> Écrire</Button>
+            </div>
+          )}
           {orderOpen && <form onSubmit={placeOrder} className="glass rounded-2xl p-5 space-y-4 mb-6"><h2 className="font-display font-bold">Demande de commande</h2><div className="grid sm:grid-cols-2 gap-4"><div className="space-y-2"><Label htmlFor="order-method">Remise</Label><select id="order-method" value={delivery} onChange={(e) => setDelivery(e.target.value)} className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"><option value="delivery">Livraison à convenir</option><option value="pickup">Remise en main propre</option></select></div><div className="space-y-2"><Label htmlFor="order-city">Ville souhaitée</Label><Input id="order-city" required maxLength={80} value={city} onChange={(e) => setCity(e.target.value)} placeholder="Pointe-Noire" /></div></div><div className="space-y-2"><Label htmlFor="order-details">Précisions (facultatif)</Label><Textarea id="order-details" maxLength={500} value={details} onChange={(e) => setDetails(e.target.value)} placeholder="Indiquez vos disponibilités ou consignes…" /></div><p className="text-xs text-muted-foreground">La demande reste en attente : aucun paiement ni livraison n'est confirmé tant que ces prestataires ne sont pas configurés.</p><Button disabled={busy} type="submit" className="rounded-full">{busy ? "Envoi…" : "Envoyer la demande"}</Button></form>}
-          {messageOpen && <form onSubmit={contactSeller} className="glass rounded-2xl p-5 space-y-3 mb-6"><Label htmlFor="seller-message">Votre message au vendeur</Label><Textarea id="seller-message" required maxLength={5000} value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Bonjour, cet article est-il toujours disponible ?" /><Button disabled={busy} type="submit" className="rounded-full">Ouvrir la conversation</Button></form>}
+          {messageOpen && <form onSubmit={contactSeller} className="glass rounded-2xl p-5 space-y-3 mb-6"><Label htmlFor="seller-message">Votre message à {product.seller || "la personne qui vend cet article"}</Label><Textarea id="seller-message" required maxLength={5000} value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Bonjour, cet article est-il toujours disponible ?" /><Button disabled={busy || !message.trim()} type="submit" className="rounded-full">{busy ? "Envoi…" : "Ouvrir la conversation"}</Button></form>}
           <div className="grid grid-cols-2 gap-4"><div className="glass rounded-xl p-4"><p className="font-display font-semibold text-sm">Paiement</p><p className="text-xs text-muted-foreground mt-1">Moyens de paiement en cours de configuration.</p></div><div className="glass rounded-xl p-4"><p className="font-display font-semibold text-sm">Remise</p><p className="text-xs text-muted-foreground mt-1">À convenir entre acheteur et vendeur.</p></div></div>
           <button onClick={() => setReportOpen(!reportOpen)} className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-primary mt-5"><ShieldAlert size={14} /> Signaler cette annonce</button>
           {reportOpen && <form onSubmit={report} className="mt-3 space-y-3"><Textarea required minLength={3} maxLength={1000} value={reportReason} onChange={(e) => setReportReason(e.target.value)} placeholder="Décrivez le problème" /><Button type="submit" size="sm">Envoyer le signalement</Button></form>}

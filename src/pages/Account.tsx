@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/contexts/AuthContext";
 import { api, assertArray } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
+import PushNotificationSettings from "@/components/PushNotificationSettings";
 
 type Listing = { id: string; name: string; price: number; status: string; city: string; img: string };
 type Notification = { id: string; kind: string; payload: Record<string, string>; readAt: string | null; createdAt: string };
@@ -300,6 +301,7 @@ export default function Account() {
               ))}
             </ul>
           )}
+          <PushNotificationSettings />
         </section>
       </main>
       <Footer />

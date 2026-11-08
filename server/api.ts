@@ -1,9 +1,12 @@
 import { randomUUID } from "node:crypto";
+
 import { GetObjectCommand, HeadObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { createRemoteJWKSet, jwtVerify, type JWTPayload } from "jose";
 import { pool } from "./database.js";
 import { getR2Bucket, getR2Client } from "./r2.js";
+import {
+  savePushSubscription, deletePushSubscription, sendPushToProfile, } from "./push.js";
 
 const MAX_JSON_BYTES = 64_000;
 const MAX_IMAGE_BYTES = 15 * 1024 * 1024;
@@ -377,10 +380,25 @@ async function orders(request: Request, method: string, path: string) {
       );
       await client.query("UPDATE listings SET status='reserved' WHERE id=$1", [listingId]);
       await client.query("INSERT INTO fulfillments (order_id,method,city,pickup_or_delivery_details) VALUES ($1,$2,$3,$4)", [order.rows[0].id,method,city,details]);
-      await client.query("INSERT INTO notifications (profile_id,kind,payload) VALUES ($1,'order_created',jsonb_build_object('orderId',$2))", [row.seller_id,order.rows[0].id]);
+      await client.query("INSERT INTO notifications (profile_id,kind,payload) VALUES ($1,'order_created',jsonb_build_object('orderId',$2::text))",
+      [row.seller_id, order.rows[0].id],);
+
       await client.query("COMMIT");
-      return json({ ...order.rows[0], total: Number(order.rows[0].total), paymentEnabled: false, message: "Votre demande est enregistrée. Le paiement sera activé lorsque les accès au prestataire seront configurés; la commande reste en attente." }, 201);
-    } catch (error) { await client.query("ROLLBACK"); throw error; }
+
+// Notification Push envoyée uniquement après validation de la transaction.
+      await sendPushToProfile(row.seller_id, {
+  title: "Nouvelle commande",
+  body: "Une nouvelle demande concerne l'un de vos articles.",
+  url: "/commandes",
+});
+
+      return json({...order.rows[0],total: Number(order.rows[0].total), paymentEnabled: false, message: "Votre demande est enregistrée. Le paiement sera activé lorsque les accès au prestataire seront configurés; la commande reste en attente.",}, 201);} 
+      
+      catch (error) {
+      try { await client.query("ROLLBACK"); }
+      catch (rollbackError) { console.error("Madclothes transaction rollback failed", rollbackError); }
+      throw error;
+    }
     finally { client.release(); }
   }
   const reviewMatch = path.match(/^\/api\/orders\/([\w-]+)\/review$/);
@@ -393,7 +411,7 @@ async function orders(request: Request, method: string, path: string) {
     const reviewee = order.rows[0].buyer_id === user.profileId ? order.rows[0].seller_id : order.rows[0].buyer_id;
     const result = await pool.query("INSERT INTO reviews (order_id,reviewer_id,reviewee_id,rating,comment) VALUES ($1,$2,$3,$4,$5) ON CONFLICT (order_id,reviewer_id) DO NOTHING RETURNING id,rating,comment", [order.rows[0].id,user.profileId,reviewee,rating,comment]);
     if (!result.rowCount) fail(409, "Vous avez déjà évalué cette commande.");
-    await pool.query("INSERT INTO notifications (profile_id,kind,payload) VALUES ($1,'new_review',jsonb_build_object('orderId',$2))", [reviewee,order.rows[0].id]);
+    await pool.query("INSERT INTO notifications (profile_id,kind,payload) VALUES ($1,'new_review',jsonb_build_object('orderId',$2::text))", [reviewee,order.rows[0].id]);
     await pool.query("INSERT INTO audit_logs (actor_id,action,entity_type,entity_id,metadata) VALUES ($1,'review_created','review',$2,$3::jsonb)", [user.profileId,result.rows[0].id,JSON.stringify({ rating })]);
     return json(result.rows[0], 201);
   }
@@ -415,10 +433,14 @@ async function orders(request: Request, method: string, path: string) {
       await client.query("UPDATE orders SET status=$2 WHERE id=$1", [order.id,next]);
       if (next === "completed") await client.query("UPDATE listings SET status='sold' WHERE id=(SELECT listing_id FROM orders WHERE id=$1)", [order.id]);
       if (next === "cancelled") await client.query("UPDATE listings SET status='published' WHERE id=(SELECT listing_id FROM orders WHERE id=$1) AND status='reserved'", [order.id]);
-      await client.query("INSERT INTO notifications (profile_id,kind,payload) VALUES ($1,'order_status',jsonb_build_object('orderId',$2,'status',$3))", [order.buyer_id === user.profileId ? order.seller_id : order.buyer_id,order.id,next]);
+      await client.query("INSERT INTO notifications (profile_id,kind,payload) VALUES ($1,'order_status',jsonb_build_object('orderId',$2::text,'status',$3::text))", [order.buyer_id === user.profileId ? order.seller_id : order.buyer_id,order.id,next]);
       await client.query("COMMIT");
       return json({ id: order.id, status: next });
-    } catch (error) { await client.query("ROLLBACK"); throw error; }
+    } catch (error) {
+      try { await client.query("ROLLBACK"); }
+      catch (rollbackError) { console.error("Madclothes transaction rollback failed", rollbackError); }
+      throw error;
+    }
     finally { client.release(); }
   }
   fail(404, "Route commande introuvable.");
@@ -454,10 +476,14 @@ async function messaging(request: Request, method: string, path: string) {
       const id = conversation.rows[0].id;
       await client.query("INSERT INTO messages (conversation_id,sender_id,body) VALUES ($1,$2,$3)", [id,user.profileId,message]);
       await client.query("UPDATE conversations SET last_message_at=now() WHERE id=$1", [id]);
-      await client.query("INSERT INTO notifications (profile_id,kind,payload) VALUES ($1,'new_message',jsonb_build_object('conversationId',$2))", [listing.rows[0].seller_id,id]);
+      await client.query("INSERT INTO notifications (profile_id,kind,payload) VALUES ($1,'new_message',jsonb_build_object('conversationId',$2::text))", [listing.rows[0].seller_id,id]);
       await client.query("COMMIT");
       return json({ id }, 201);
-    } catch (error) { await client.query("ROLLBACK"); throw error; }
+    } catch (error) {
+      try { await client.query("ROLLBACK"); }
+      catch (rollbackError) { console.error("Madclothes transaction rollback failed", rollbackError); }
+      throw error;
+    }
     finally { client.release(); }
   }
   const match = path.match(/^\/api\/conversations\/([\w-]+)$/);
@@ -471,15 +497,47 @@ async function messaging(request: Request, method: string, path: string) {
   if (method === "POST" && match) {
     const input = await body<Record<string, unknown>>(request);
     const message = text(input.message, "Le message", 1, 5000);
-    const allowed = await pool.query("SELECT id,buyer_id,seller_id FROM conversations WHERE id=$1 AND (buyer_id=$2 OR seller_id=$2)", [match[1],user.profileId]);
-    if (!allowed.rowCount) fail(404, "Conversation introuvable.");
-    await pool.query("INSERT INTO messages (conversation_id,sender_id,body) VALUES ($1,$2,$3)", [match[1],user.profileId,message]);
-    await pool.query("UPDATE conversations SET last_message_at=now() WHERE id=$1", [match[1]]);
-    const target = allowed.rows[0].buyer_id === user.profileId ? allowed.rows[0].seller_id : allowed.rows[0].buyer_id;
-    await pool.query("INSERT INTO notifications (profile_id,kind,payload) VALUES ($1,'new_message',jsonb_build_object('conversationId',$2))", [target,match[1]]);
-    return json({ sent: true }, 201);
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+      const allowed = await client.query("SELECT id,buyer_id,seller_id FROM conversations WHERE id=$1 AND (buyer_id=$2 OR seller_id=$2) FOR UPDATE", [match[1],user.profileId]);
+      if (!allowed.rowCount) fail(404, "Conversation introuvable.");
+      await client.query("INSERT INTO messages (conversation_id,sender_id,body) VALUES ($1,$2,$3)", [match[1],user.profileId,message]);
+      await client.query("UPDATE conversations SET last_message_at=now() WHERE id=$1", [match[1]]);
+      const target = allowed.rows[0].buyer_id === user.profileId ? allowed.rows[0].seller_id : allowed.rows[0].buyer_id;
+      await client.query("INSERT INTO notifications (profile_id,kind,payload) VALUES ($1,'new_message',jsonb_build_object('conversationId',$2::text))", [target,match[1]]);
+      await client.query("COMMIT");
+      return json({ sent: true }, 201);
+    } catch (error) {
+      try { await client.query("ROLLBACK"); }
+      catch (rollbackError) { console.error("Madclothes transaction rollback failed", rollbackError); }
+      throw error;
+    } finally { client.release(); }
   }
   fail(404, "Route messagerie introuvable.");
+}
+
+async function pushSubscriptions(request: Request, method: string) {
+  const user = await authenticated(request);
+
+  if (method === "POST") {
+    const input = await body<Record<string, unknown>>(request);
+    const subscription = input.subscription ?? input;
+
+    await savePushSubscription(user.profileId, subscription);
+
+    return json({ subscribed: true }, 201);
+  }
+
+  if (method === "DELETE") {
+    const input = await body<Record<string, unknown>>(request);
+
+    await deletePushSubscription(user.profileId, input.endpoint);
+
+    return json({ unsubscribed: true });
+  }
+
+  fail(405, "Méthode non autorisée.");
 }
 
 async function notifications(request: Request, method: string, path: string) {
@@ -647,6 +705,7 @@ export async function handleApi(request: Request): Promise<Response> {
     if (path === "/api/favorites" || path.startsWith("/api/favorites/")) return await favorites(req, req.method, path);
     if (path === "/api/orders" || path.startsWith("/api/orders/")) return await orders(req, req.method, path);
     if (path === "/api/conversations" || path.startsWith("/api/conversations/")) return await messaging(req, req.method, path);
+    if (path === "/api/push-subscriptions") return await pushSubscriptions(req, req.method);
     if (path === "/api/notifications" || path.startsWith("/api/notifications/")) return await notifications(req, req.method, path);
     if (path.startsWith("/api/admin/")) return await admin(req, req.method, path);
     if (path === "/api/reports" && req.method === "POST") {
@@ -665,7 +724,10 @@ export async function handleApi(request: Request): Promise<Response> {
     if (apiError.status) return json({ error: apiError.message }, apiError.status);
     if ((error as { code?: string }).code === "23505") return json({ error: "Cet élément existe déjà ou n'est plus disponible." }, 409);
     if ((error as { code?: string }).code === "23503") return json({ error: "La référence demandée n'existe pas." }, 400);
-    console.error("Madclothes API error", error);
-    return json({ error: "Une erreur inattendue est survenue." }, 500);
+    const reference = randomUUID();
+    const code = typeof (error as { code?: unknown })?.code === "string" ? (error as { code: string }).code : "INTERNAL";
+    const errorName = error instanceof Error ? error.name : "UnknownError";
+    console.error("Madclothes API error", { reference, method: req.method, path, code, errorName, error });
+    return json({ error: `Le serveur n’a pas pu terminer l’opération. Référence de diagnostic : ${reference}`, reference }, 500);
   }
 }

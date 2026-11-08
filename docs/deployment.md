@@ -27,6 +27,12 @@ Le projet n’a pas encore été déployé; le domaine Vercel de production rest
 
 N’ajoutez jamais de secret avec le préfixe `VITE_`. Les variables MTN MoMo et RTL Money restent inutilisées tant que les accès fournisseur et la logique de confirmation serveur ne sont pas fournis.
 
+## Notifications Web Push
+
+Pour tester l’activation, renseignez la clé publique VAPID dans `VITE_VAPID_PUBLIC_KEY` (navigateur) et `VAPID_PUBLIC_KEY` (serveur), ainsi que `VAPID_PRIVATE_KEY` et `VAPID_SUBJECT` côté serveur. La clé privée ne doit jamais porter le préfixe `VITE_`, entrer dans le bundle client ou être copiée dans un journal. `.env.example` ne contient que des valeurs vides ou fictives; ne remplacez pas `.env.local` sans vérifier la cible.
+
+La migration `db/migrations/0003_push_subscriptions.sql` doit être examinée puis appliquée séparément par le propriétaire à la base visée avant l’enregistrement réel des appareils. Le service worker Push est désactivé en mode Vite dev : utilisez une build locale et `vite preview` sur un contexte sécurisé pour tester les événements du navigateur. La permission n’est demandée qu’après le clic de l’utilisateur.
+
 ## CORS Cloudflare R2
 
 Adaptez les domaines avant d’enregistrer la règle dans les paramètres du bucket :
@@ -44,3 +50,6 @@ Adaptez les domaines avant d’enregistrer la règle dans les paramètres du buc
 ```
 
 Les migrations SQL se trouvent dans `db/migrations`. Pour le projet Neon Madclothes actuel, elles sont déjà appliquées; ne les rejouez pas en production sans vérifier l’historique de migration.
+
+
+> **État du chantier (2026-11-06) :** la migration `0003_push_subscriptions.sql` n’a pas été exécutée sur la base cible. La note générale ci-dessus ne vaut pas confirmation de cette migration; vérifiez l’historique Neon avant toute application.
