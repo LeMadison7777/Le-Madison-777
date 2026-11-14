@@ -413,6 +413,11 @@ async function orders(request: Request, method: string, path: string) {
     if (!result.rowCount) fail(409, "Vous avez déjà évalué cette commande.");
     await pool.query("INSERT INTO notifications (profile_id,kind,payload) VALUES ($1,'new_review',jsonb_build_object('orderId',$2::text))", [reviewee,order.rows[0].id]);
     await pool.query("INSERT INTO audit_logs (actor_id,action,entity_type,entity_id,metadata) VALUES ($1,'review_created','review',$2,$3::jsonb)", [user.profileId,result.rows[0].id,JSON.stringify({ rating })]);
+    await sendPushToProfile(reviewee, {
+      title: "Nouvel avis",
+      body: "Vous avez reçu une nouvelle évaluation.",
+      url: "/compte",
+    });
     return json(result.rows[0], 201);
   }
   const match = path.match(/^\/api\/orders\/([\w-]+)\/status$/);
@@ -435,6 +440,12 @@ async function orders(request: Request, method: string, path: string) {
       if (next === "cancelled") await client.query("UPDATE listings SET status='published' WHERE id=(SELECT listing_id FROM orders WHERE id=$1) AND status='reserved'", [order.id]);
       await client.query("INSERT INTO notifications (profile_id,kind,payload) VALUES ($1,'order_status',jsonb_build_object('orderId',$2::text,'status',$3::text))", [order.buyer_id === user.profileId ? order.seller_id : order.buyer_id,order.id,next]);
       await client.query("COMMIT");
+      const statusTarget = order.buyer_id === user.profileId ? order.seller_id : order.buyer_id;
+      await sendPushToProfile(statusTarget, {
+        title: "Statut de votre commande",
+        body: "Le statut de votre commande a été mis à jour.",
+        url: "/commandes",
+      });
       return json({ id: order.id, status: next });
     } catch (error) {
       try { await client.query("ROLLBACK"); }
@@ -478,6 +489,11 @@ async function messaging(request: Request, method: string, path: string) {
       await client.query("UPDATE conversations SET last_message_at=now() WHERE id=$1", [id]);
       await client.query("INSERT INTO notifications (profile_id,kind,payload) VALUES ($1,'new_message',jsonb_build_object('conversationId',$2::text))", [listing.rows[0].seller_id,id]);
       await client.query("COMMIT");
+      await sendPushToProfile(listing.rows[0].seller_id, {
+        title: "Nouveau message",
+        body: "Vous avez reçu un nouveau message concernant votre annonce.",
+        url: `/messages/${id}`,
+      });
       return json({ id }, 201);
     } catch (error) {
       try { await client.query("ROLLBACK"); }
@@ -507,6 +523,11 @@ async function messaging(request: Request, method: string, path: string) {
       const target = allowed.rows[0].buyer_id === user.profileId ? allowed.rows[0].seller_id : allowed.rows[0].buyer_id;
       await client.query("INSERT INTO notifications (profile_id,kind,payload) VALUES ($1,'new_message',jsonb_build_object('conversationId',$2::text))", [target,match[1]]);
       await client.query("COMMIT");
+      await sendPushToProfile(target, {
+        title: "Nouveau message",
+        body: "Vous avez reçu un nouveau message.",
+        url: `/messages/${match[1]}`,
+      });
       return json({ sent: true }, 201);
     } catch (error) {
       try { await client.query("ROLLBACK"); }

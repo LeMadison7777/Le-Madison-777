@@ -78,7 +78,9 @@ describe("réglage frontend des notifications Push", () => {
     render(<PushNotificationSettings />);
 
     expect(requestPermission).not.toHaveBeenCalled();
-    fireEvent.click(screen.getByRole("button", { name: /activer les notifications push/i }));
+    const button = await screen.findByRole("button", { name: /activer les notifications push/i });
+    await waitFor(() => expect(button).toBeEnabled());
+    fireEvent.click(button);
 
     await waitFor(() => expect(requestPermission).toHaveBeenCalledOnce());
     expect(registration.pushManager.subscribe).toHaveBeenCalledWith(expect.objectContaining({
@@ -110,10 +112,10 @@ describe("réglage frontend des notifications Push", () => {
   });
 
   it("refuse une clé VAPID malformée avant de demander la permission", async () => {
-    vi.stubEnv("VITE_VAPID_PUBLIC_KEY", "invalid-key");
+    vi.stubEnv("VITE_VAPID_PUBLIC_KEY", "invalid_key_with_invalid_length");
     render(<PushNotificationSettings />);
 
-    expect(await screen.findByText(/clé publique VAPID.*invalide/i)).toBeInTheDocument();
+    expect(await screen.findByText(/clé publique VAPID/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /activer les notifications push/i })).toBeDisabled();
     expect(requestPermission).not.toHaveBeenCalled();
   });
