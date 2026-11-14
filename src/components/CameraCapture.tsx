@@ -213,7 +213,7 @@ export default function CameraCapture({
               <button
                 type="button"
                 onClick={capturePhoto}
-                className="w-full rounded-xl bg-indigo-600 px-5 py-3 font-semibold text-white transition hover:bg-indigo-700"
+                className="w-full rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:bg-primary/90"
               >
                 Prendre la photo
               </button>
@@ -229,7 +229,7 @@ export default function CameraCapture({
                 type="button"
                 onClick={startCamera}
                 disabled={isStarting}
-                className="rounded-xl bg-indigo-600 px-6 py-3 font-semibold text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+                className="rounded-xl bg-primary px-6 py-3 font-semibold text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isStarting
                   ? "Activation de la caméra..."

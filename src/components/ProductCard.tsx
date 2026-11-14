@@ -24,9 +24,9 @@ export default function ProductCard({ product }: { product: Product }) {
     } catch { window.dispatchEvent(new CustomEvent("madclothes:auth-required")); }
     finally { setBusy(false); }
   }
-  return <motion.article layout className="group glass glass-border-glow rounded-2xl overflow-hidden flex flex-col">
+  return <motion.article layout className="group rounded-2xl border border-white/10 bg-white/[0.03] overflow-hidden flex flex-col">
     <div className="relative aspect-square overflow-hidden">
-      <Link to={`/article/${product.id}`} aria-label={`Voir ${product.name}`}><img src={product.img} alt={product.name} loading="lazy" className="w-full h-full object-cover bg-white/5 transition-transform duration-700 group-hover:scale-105" /></Link>
+      <Link to={`/article/${product.id}`} aria-label={`Voir ${product.name}`}><img src={product.img} alt={product.name} loading="lazy" className="w-full h-full object-cover bg-white/5 transition-transform duration-200 group-hover:scale-105" /></Link>
       <span className={`absolute top-3 left-3 text-[10px] md:text-xs px-2.5 py-1 rounded-full border backdrop-blur-md ${conditionStyles[product.condition]}`}>{product.condition}</span>
       <button type="button" aria-label={favorite ? "Retirer des favoris" : "Ajouter aux favoris"} aria-pressed={favorite} disabled={busy} onClick={toggleFavorite} className={`absolute top-3 right-3 w-9 h-9 rounded-full glass-strong flex items-center justify-center transition-colors ${favorite ? "text-primary" : "text-foreground/80 hover:text-primary"}`}><Heart size={16} fill={favorite ? "currentColor" : "none"} /></button>
     </div>

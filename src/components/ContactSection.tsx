@@ -83,7 +83,7 @@ const ContactSection = () => {
           whileInView={{ opacity: 1, scale: 1, y: 0 }}
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-10 sm:mt-12 rounded-2xl glass glass-border-glow p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-6 text-left ring-glow"
+          className="mt-10 sm:mt-12 rounded-2xl border border-white/10 bg-white/[0.03] p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-6 text-left"
         >
           <motion.img
             whileHover={{ scale: 1.05, rotate: 1 }}
